@@ -1,15 +1,6 @@
 # apphosting.yaml
 
 env:
-  # Needed at RUNTIME only (never BUILD) - lib/emailSend.ts reads this
-  # lazily the first time an email is actually sent, same pattern as the
-  # Twilio credentials. Without this declared here, .env.local values never
-  # reach the deployed app - that file only applies to local dev.
-  - variable: SENDGRID_API_KEY
-    secret: SENDGRID_API_KEY
-    availability:
-      - RUNTIME
-
   # Firebase web app config - not secret (these are public client-side
   # identifiers restricted by Firebase Security Rules, same as any other
   # Firebase web app), safe to commit. Needed at BUILD time since

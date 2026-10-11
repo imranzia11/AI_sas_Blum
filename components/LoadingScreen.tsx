@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 
 // Shared full-page "checking access / loading" screen, used by every
 // authenticated page that renders this exact branded card (dashboard, logs,
-// stats, blacklisted, templates, help, email-marketing, admin pages).
+// stats, blacklisted, templates, help, admin pages).
 // Previously each page duplicated its own copy of these style objects. The
 // spinner is a small "message being sent" animation (a bubble traveling
 // from an origin dot to a target dot, leaving a fading trail) instead of a
