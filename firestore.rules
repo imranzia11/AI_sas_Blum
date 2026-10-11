@@ -1,0 +1,203 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsResource() {
+      return signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    function ownsNewResource() {
+      return signedIn() && request.resource.data.ownerUid == request.auth.uid;
+    }
+
+    // Blocks reassigning a document to a different owner mid-update.
+    function ownerUidUnchanged() {
+      return request.resource.data.ownerUid == resource.data.ownerUid;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+
+      allow create: if signedIn() && request.auth.uid == userId
+        // Prevent granting yourself a privileged role at signup.
+        && (!('role' in request.resource.data) || request.resource.data.role == 'user');
+
+      allow update: if signedIn() && request.auth.uid == userId
+        // Users can edit their own profile, but not their own role or
+        // active/inactive flag — that should only ever be changed via a
+        // trusted server-side path (e.g. an admin API route using the
+        // Firebase Admin SDK, which bypasses these rules entirely).
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.isActive == resource.data.isActive
+        // Same reasoning for the Email Marketing sender identity fields -
+        // these are only ever written by app/api/email-marketing/create-sender
+        // (via the Admin SDK) after SendGrid confirms ownership of the
+        // inbox. A direct client write here would let someone claim to be
+        // sending as an email address they never actually verified.
+        // .get(field, null) is used instead of dot access so this doesn't
+        // error out on accounts that don't have these fields set yet.
+        && request.resource.data.get('senderEmail', null) == resource.data.get('senderEmail', null)
+        && request.resource.data.get('senderName', null) == resource.data.get('senderName', null)
+        && request.resource.data.get('senderId', null) == resource.data.get('senderId', null)
+        && request.resource.data.get('senderVerified', null) == resource.data.get('senderVerified', null)
+        // Per-SMS usage rate is set only via the Admin SDK (tools/set-billing-rate.ts).
+        && request.resource.data.get('billingRatePerSms', null) == resource.data.get('billingRatePerSms', null);
+
+      allow delete: if false;
+    }
+
+    // Maps a normalized E.164 phone number (the document ID) to exactly one
+    // owning user. This collection only exists to make number-to-user
+    // ownership structurally unique: doc ID = the number, so two users can
+    // never claim the same number, even under a race condition, because
+    // Firestore rejects a create() against an ID that already exists.
+    //
+    // Written only by trusted server-side code (Admin SDK, which bypasses
+    // these rules entirely) during number provisioning and by the inbound
+    // Twilio webhook's reconciliation path. Regular client access is
+    // intentionally denied — there is no legitimate reason for a signed-in
+    // user's browser to read or write this collection directly.
+    match /numberAssignments/{e164Number} {
+      allow read, write: if false;
+    }
+
+    // Platform-wide opt-out list (doc ID = normalized E.164 number). A STOP
+    // to ANY user's number blocks that number for every user, not just the
+    // one they replied to — required for TCPA/CTIA opt-out compliance.
+    // Written only by the inbound webhook (Admin SDK, bypasses these
+    // rules) and checked by every send path via lib/twilioSend.ts. No
+    // legitimate reason for client-side read/write access.
+    match /globalBlacklist/{e164Number} {
+      allow read, write: if false;
+    }
+
+    match /conversations/{conversationId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+
+      match /messages/{messageId} {
+        allow read: if ownsResource();
+        allow create: if ownsNewResource();
+        allow update: if ownsResource() && ownerUidUnchanged();
+        allow delete: if ownsResource();
+      }
+    }
+
+    match /messages/{messageId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if false;
+    }
+
+    match /replies/{replyId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if false;
+    }
+
+    match /blacklisted_numbers/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if false;
+    }
+
+    match /blacklist_events/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if false;
+    }
+
+    match /uploads/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+    }
+
+    match /leads/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+    }
+
+    match /campaigns/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+    }
+
+    match /messageTemplates/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+    }
+
+    match /followUps/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if ownsResource() && ownerUidUnchanged();
+      allow delete: if ownsResource();
+    }
+
+    // Server-only error log for /api/schedule-follow-up failures (see
+    // task #82 - 3 of 4 follow-up-enabled sends on one account silently
+    // failed with no trace). Only the Admin SDK ever writes these
+    // (bypasses rules entirely), so create/update/delete are all closed
+    // to clients - only read is allowed, for a possible future "Logs" page
+    // surface.
+    match /followUpScheduleErrors/{docId} {
+      allow read: if ownsResource();
+      allow create, update, delete: if false;
+    }
+
+    // Append-only audit trail of manual deletions (conversations, leads,
+    // upload records) - see lib/deletionLog.ts. Deliberately no update or
+    // delete: once an entry is written, nothing in the app (including the
+    // person who did the deleting) can alter or remove it, so it stays a
+    // trustworthy record of who deleted what and when.
+    match /deletionLogs/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Superadmin broadcast messages ("there was an update...") - fanned out
+    // to every signed-in account, not owner-scoped like everything else in
+    // this file. Only the Admin SDK (via /api/admin/announcements, gated by
+    // a server-side superadmin check) ever writes a new one, so create/
+    // update/delete are closed to clients entirely; any signed-in user can
+    // read the list so their browser can show the latest one as a popup.
+    match /announcements/{docId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // Append-only login log, one doc per successful sign-in - written by
+    // app/login/page.tsx right after the isActive check passes. Only the
+    // account itself can read its own entries here; the superadmin's
+    // cross-account view of this data goes through /api/admin/account/[uid]
+    // instead, which uses the Admin SDK (bypasses these rules entirely)
+    // behind its own server-side role check. No update/delete - a login
+    // record should never be editable after the fact.
+    match /loginHistory/{docId} {
+      allow read: if ownsResource();
+      allow create: if ownsNewResource();
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

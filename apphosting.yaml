@@ -1,0 +1,29 @@
+env:
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+    availability:
+      - RUNTIME
+  # Needed at RUNTIME only (never BUILD) - lib/emailSend.ts reads this
+  # lazily the first time an email is actually sent, same pattern as the
+  # Twilio credentials. Without this declared here, .env.local values never
+  # reach the deployed app - that file only applies to local dev.
+  - variable: SENDGRID_API_KEY
+    secret: SENDGRID_API_KEY
+    availability:
+      - RUNTIME
+  # Public Web Push key (not secret - safe to commit, same as the Firebase
+  # web config already hardcoded in lib/firebase.ts). Needed at BUILD time
+  # since NEXT_PUBLIC_ vars get baked into the client bundle by Next.js.
+  - variable: NEXT_PUBLIC_FIREBASE_VAPID_KEY
+    value: "BGECgfDNoz2PgoBLCfkiLKsV-IFSVhTRUzfOQhz7PIBo5SPX3HV66VSf4npLlCjdtp87cJLJwlYSF9O1xyb_Yco"
+    availability:
+      - BUILD
+      - RUNTIME
+
+# Keep one container warm at all times so visitors never hit a cold-start
+# delay (a few extra seconds on the very first request after the app has
+# been idle). Under Firebase's default request-based billing this only
+# costs idle-memory charges (~$2-4/month at the default 512MiB instance
+# size) - CPU is still only billed while actively handling a request.
+runConfig:
+  minInstances: 1

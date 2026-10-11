@@ -1,0 +1,553 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getAuth } from "firebase-admin/auth";
+import { FieldValue } from "firebase-admin/firestore";
+import { adminDb } from "../../../lib/firebaseAdmin";
+import { sendSmsForUser } from "../../../lib/twilioSend";
+import { toE164, phoneDocId, reversePhone } from "../../../lib/phone";
+
+type LeadInput = {
+  name?: string;
+  phone?: string;
+};
+
+function formatLeadName(name?: string) {
+  const value = String(name || "").trim();
+  if (!value) return "";
+
+  return value
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function normalizeMediaUrls(value: unknown) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => String(item || "").trim())
+    .filter(Boolean)
+    .filter((url) => /^https:\/\//i.test(url));
+}
+
+async function getUserFromRequest(req: NextRequest) {
+  const authHeader = req.headers.get("authorization") || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+
+  if (!token) {
+    throw new Error("Missing authorization token.");
+  }
+
+  return getAuth().verifyIdToken(token);
+}
+
+async function hasPreviouslySentSuccessfulSms(ownerUid: string, phone: string) {
+  const snap = await adminDb
+    .collection("messages")
+    .where("ownerUid", "==", ownerUid)
+    .where("to", "==", phone)
+    .where("direction", "==", "outbound")
+    .limit(1)
+    .get();
+
+  if (snap.empty) return false;
+
+  const successfulStatuses = new Set([
+    "queued",
+    "accepted",
+    "scheduled",
+    "sending",
+    "sent",
+    "delivered",
+  ]);
+
+  return snap.docs.some((doc) => {
+    const data = doc.data();
+    const status = String(data.status || "").toLowerCase();
+    return successfulStatuses.has(status);
+  });
+}
+
+async function getBlacklistRecord(ownerUid: string, phone: string) {
+  const snap = await adminDb
+    .collection("blacklisted_numbers")
+    .where("ownerUid", "==", ownerUid)
+    .where("phone", "==", phone)
+    .limit(1)
+    .get();
+
+  if (snap.empty) return null;
+
+  const doc = snap.docs[0];
+  const data = doc.data() || {};
+
+  return {
+    id: doc.id,
+    status: String(data.status || "").toLowerCase(),
+    reason: String(data.reason || ""),
+    keyword: String(data.keyword || ""),
+    source: String(data.source || ""),
+    data,
+  };
+}
+
+function buildPersonalizedMessage(
+  baseMessage: string,
+  leadName?: string,
+  isFirstMessage?: boolean
+) {
+  const trimmedBase = String(baseMessage || "").trim();
+  if (!trimmedBase) return "";
+
+  if (!isFirstMessage) {
+    return trimmedBase;
+  }
+
+  const cleanName = formatLeadName(leadName);
+  const greeting = cleanName ? `Hi ${cleanName}! ` : "Hi! ";
+  return `${greeting}${trimmedBase}`;
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const decodedUser = await getUserFromRequest(req);
+    const uid = decodedUser.uid;
+
+    const userSnap = await adminDb.collection("users").doc(uid).get();
+
+    if (!userSnap.exists) {
+      return NextResponse.json(
+        { ok: false, error: "User profile not found." },
+        { status: 404 }
+      );
+    }
+
+    const userData = userSnap.data() || {};
+
+    if (userData.isActive !== true) {
+      return NextResponse.json(
+        { ok: false, error: "User account is inactive." },
+        { status: 403 }
+      );
+    }
+
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const appBaseUrl = process.env.APP_BASE_URL?.trim()?.replace(/\/$/, "");
+
+    const twilioNumber = toE164(
+      String(userData.twilioNumber || userData.assignedTwilioNumber || "")
+    );
+
+    if (!accountSid || !authToken) {
+      return NextResponse.json(
+        { ok: false, error: "Missing Twilio account configuration." },
+        { status: 500 }
+      );
+    }
+
+    if (!appBaseUrl) {
+      return NextResponse.json(
+        { ok: false, error: "APP_BASE_URL is missing." },
+        { status: 500 }
+      );
+    }
+
+    if (!twilioNumber) {
+      return NextResponse.json(
+        { ok: false, error: "No Twilio number is assigned to this user." },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
+
+    const {
+      campaignName,
+      fileId,
+      fileName,
+      message,
+      leads,
+      mediaUrls,
+    }: {
+      campaignName?: string;
+      fileId?: string;
+      fileName?: string;
+      message?: string;
+      leads?: LeadInput[];
+      mediaUrls?: string[];
+    } = body;
+
+    if (!message?.trim() && (!Array.isArray(mediaUrls) || mediaUrls.length === 0)) {
+      return NextResponse.json(
+        { ok: false, error: "Message or media is required." },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(leads) || leads.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: "No leads provided." },
+        { status: 400 }
+      );
+    }
+
+    const safeMediaUrls = normalizeMediaUrls(mediaUrls);
+
+    if (Array.isArray(mediaUrls) && mediaUrls.length > 0 && safeMediaUrls.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: "All media URLs are invalid. Use public HTTPS URLs." },
+        { status: 400 }
+      );
+    }
+
+    const results: Array<{
+      name?: string;
+      phone: string;
+      ok: boolean;
+      sid?: string;
+      status?: string;
+      error?: string;
+      code?: number | null;
+      personalizedBody?: string;
+      isFirstMessage?: boolean;
+      skipped?: boolean;
+      blockedReason?: string;
+      mediaUrls?: string[];
+    }> = [];
+
+    for (const lead of leads) {
+      const formattedPhone = toE164(lead.phone || "");
+
+      if (!formattedPhone) {
+        results.push({
+          name: lead.name,
+          phone: lead.phone || "",
+          ok: false,
+          error: "Invalid phone number",
+          code: null,
+          mediaUrls: safeMediaUrls,
+        });
+        continue;
+      }
+
+      const blacklistRecord = await getBlacklistRecord(uid, formattedPhone);
+      const blocked = blacklistRecord?.status === "blocked";
+
+      if (blocked) {
+        const blockedReason =
+          blacklistRecord?.reason ||
+          blacklistRecord?.keyword ||
+          "Number is blocked or opted out.";
+
+        await adminDb.collection("messages").add({
+          ownerUid: uid,
+          ownerEmail: String(userData.email || ""),
+          ownerName: String(userData.name || ""),
+          ownerRole: String(userData.role || "user"),
+          campaignName: campaignName || "",
+          fileId: fileId || "",
+          fileName: fileName || "",
+          name: formatLeadName(lead.name || ""),
+          phone: formattedPhone,
+          to: formattedPhone,
+          from: twilioNumber,
+          body: message?.trim() || "",
+          mediaUrls: safeMediaUrls,
+          sid: "",
+          twilioSid: "",
+          status: "blocked",
+          direction: "outbound",
+          isFirstMessage: false,
+          twilioNumber,
+          assignedTwilioNumber: twilioNumber,
+          messagingServiceSid: "",
+          sourceFileName: fileName || "",
+          error: blockedReason,
+          blacklistReason: blacklistRecord?.reason || "",
+          blacklistKeyword: blacklistRecord?.keyword || "",
+          blacklistSource: blacklistRecord?.source || "",
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+
+        results.push({
+          name: lead.name,
+          phone: formattedPhone,
+          ok: false,
+          skipped: true,
+          status: "blocked",
+          error: "Number is blocked or opted out.",
+          blockedReason,
+          code: null,
+          mediaUrls: safeMediaUrls,
+        });
+        continue;
+      }
+
+      try {
+        const alreadyMessaged = await hasPreviouslySentSuccessfulSms(
+          uid,
+          formattedPhone
+        );
+
+        const isFirstMessage = !alreadyMessaged;
+        const finalMessage = buildPersonalizedMessage(
+          message?.trim() || "",
+          lead.name,
+          isFirstMessage
+        );
+
+        // Routed through the shared sendSmsForUser helper so `from` is
+        // always pinned to this user's own number, never picked from the
+        // shared Messaging Service pool.
+        const res = await sendSmsForUser({
+          userData,
+          to: formattedPhone,
+          body: finalMessage,
+          mediaUrls: safeMediaUrls,
+        });
+
+        const convoId = `${uid}_${phoneDocId(formattedPhone)}`;
+        const convoRef = adminDb.collection("conversations").doc(convoId);
+        const threadMessageRef = convoRef.collection("messages").doc(res.sid);
+
+        const existingConvoSnap = await convoRef.get();
+        const existingConvo = existingConvoSnap.exists
+          ? existingConvoSnap.data() || {}
+          : {};
+
+        const existingUnreadCount = Number(existingConvo.unreadCount || 0);
+        const existingReplyCount = Number(existingConvo.replyCount || 0);
+        const existingHasReply = existingConvo.hasReply === true;
+
+        await threadMessageRef.set({
+          sid: res.sid,
+          ownerUid: uid,
+          ownerEmail: String(userData.email || ""),
+          ownerName: String(userData.name || ""),
+          ownerRole: String(userData.role || "user"),
+          conversationId: convoId,
+          from: res.from || twilioNumber,
+          to: formattedPhone,
+          phone: formattedPhone,
+          body: finalMessage,
+          mediaUrls: safeMediaUrls,
+          direction: "outbound",
+          status: res.status || "queued",
+          read: true,
+          isFirstMessage,
+          twilioNumber,
+          assignedTwilioNumber: twilioNumber,
+          messagingServiceSid: userData.messagingServiceSid || "",
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+
+        await convoRef.set(
+          {
+            ownerUid: uid,
+            ownerEmail: String(userData.email || ""),
+            ownerName: String(userData.name || ""),
+            ownerRole: String(userData.role || "user"),
+            phone: formattedPhone,
+            phoneReversed: reversePhone(formattedPhone),
+            name: formatLeadName(lead.name || ""),
+            twilioNumber,
+            assignedTwilioNumber: twilioNumber,
+            messagingServiceSid: "",
+            lastMessage: finalMessage || (safeMediaUrls.length > 0 ? "Sent media" : ""),
+            lastDirection: "outbound",
+            lastMessageAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+            status: existingHasReply ? "replied" : "awaiting_reply",
+            hasReply: existingHasReply,
+            unreadCount: existingUnreadCount,
+            replyCount: existingReplyCount,
+            outboundCount: FieldValue.increment(1),
+            messageCount: FieldValue.increment(1),
+            firstOutboundAt:
+              existingConvo.firstOutboundAt || FieldValue.serverTimestamp(),
+            lastOutboundAt: FieldValue.serverTimestamp(),
+            lastInboundAt: existingConvo.lastInboundAt || null,
+            lastOutboundStatus: res.status || "queued",
+            blocked: false,
+          },
+          { merge: true }
+        );
+
+        await adminDb.collection("messages").add({
+          ownerUid: uid,
+          ownerEmail: String(userData.email || ""),
+          ownerName: String(userData.name || ""),
+          ownerRole: String(userData.role || "user"),
+          conversationId: convoId,
+          campaignName: campaignName || "",
+          fileId: fileId || "",
+          fileName: fileName || "",
+          name: formatLeadName(lead.name || ""),
+          phone: formattedPhone,
+          to: formattedPhone,
+          from: res.from || twilioNumber,
+          body: finalMessage,
+          mediaUrls: safeMediaUrls,
+          sid: res.sid,
+          twilioSid: res.sid,
+          status: res.status || "queued",
+          direction: "outbound",
+          read: true,
+          isFirstMessage,
+          twilioNumber,
+          assignedTwilioNumber: twilioNumber,
+          messagingServiceSid: "",
+          sourceFileName: fileName || "",
+          error: "",
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+
+        // Follow-up scheduling is handled separately by the dedicated
+        // /api/schedule-follow-up route (called by the dashboard right
+        // after this send succeeds). An older inline version used to live
+        // here, but it was dead code - the dashboard never actually sends
+        // followUpEnabled/sendAfterHours to this endpoint - and it lacked
+        // the blacklist pre-check and duplicate-follow-up prevention that
+        // /api/schedule-follow-up has. Removed to avoid it ever being wired
+        // up again and reintroducing those gaps.
+
+        results.push({
+          name: lead.name,
+          phone: formattedPhone,
+          ok: true,
+          sid: res.sid,
+          status: res.status || "queued",
+          personalizedBody: finalMessage,
+          isFirstMessage,
+          mediaUrls: safeMediaUrls,
+        });
+      } catch (err: any) {
+        const errorMessage = err?.message || "Failed to send";
+        const errorCode = err?.code ? String(err.code) : "";
+
+        await adminDb.collection("messages").add({
+          ownerUid: uid,
+          ownerEmail: String(userData.email || ""),
+          ownerName: String(userData.name || ""),
+          ownerRole: String(userData.role || "user"),
+          campaignName: campaignName || "",
+          fileId: fileId || "",
+          fileName: fileName || "",
+          name: formatLeadName(lead.name || ""),
+          phone: formattedPhone,
+          to: formattedPhone,
+          from: twilioNumber,
+          body: message?.trim() || "",
+          mediaUrls: safeMediaUrls,
+          sid: "",
+          twilioSid: "",
+          status: "failed",
+          direction: "outbound",
+          isFirstMessage: false,
+          twilioNumber,
+          assignedTwilioNumber: twilioNumber,
+          messagingServiceSid: "",
+          sourceFileName: fileName || "",
+          error: errorMessage,
+          errorCode,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+
+        // Previously an immediate send failure (invalid number, instant
+        // Twilio rejection, etc.) only ever showed up here in /logs - never
+        // in the conversation thread itself, and never counted toward the
+        // Failed/Undelivered tab on /replies (that tab only ever saw
+        // failures reported later by the status webhook, e.g. a carrier
+        // rejecting an already-accepted message). Writing the same failure
+        // into the conversation's own thread + summary fields closes that
+        // gap, using a best-effort try/catch so a logging problem here
+        // can't turn into a 500 for the whole per-lead loop.
+        try {
+          const convoId = `${uid}_${phoneDocId(formattedPhone)}`;
+          const convoRef = adminDb.collection("conversations").doc(convoId);
+          const convoSnap = await convoRef.get();
+          const convoData = convoSnap.exists ? convoSnap.data() || {} : {};
+
+          await convoRef.collection("messages").doc().set({
+            sid: "",
+            ownerUid: uid,
+            ownerEmail: String(userData.email || ""),
+            ownerName: String(userData.name || ""),
+            ownerRole: String(userData.role || "user"),
+            conversationId: convoId,
+            from: twilioNumber,
+            to: formattedPhone,
+            phone: formattedPhone,
+            body: message?.trim() || "",
+            mediaUrls: safeMediaUrls,
+            direction: "outbound",
+            status: "failed",
+            error: errorMessage,
+            errorCode,
+            read: true,
+            twilioNumber,
+            assignedTwilioNumber: twilioNumber,
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+
+          await convoRef.set(
+            {
+              ownerUid: uid,
+              phone: formattedPhone,
+              phoneReversed: reversePhone(formattedPhone),
+              name: formatLeadName(lead.name || ""),
+              twilioNumber,
+              assignedTwilioNumber: twilioNumber,
+              lastMessage: message?.trim() || "",
+              lastDirection: "outbound",
+              lastMessageAt: FieldValue.serverTimestamp(),
+              updatedAt: FieldValue.serverTimestamp(),
+              status: "delivery_issue",
+              lastOutboundAt: FieldValue.serverTimestamp(),
+              lastOutboundStatus: "failed",
+              blocked: convoData.blocked === true,
+            },
+            { merge: true }
+          );
+        } catch (logError) {
+          console.error("send-sms: failed to log failure to conversation", logError);
+        }
+
+        results.push({
+          name: lead.name,
+          phone: formattedPhone,
+          ok: false,
+          error: errorMessage,
+          code: err?.code || null,
+          mediaUrls: safeMediaUrls,
+        });
+      }
+    }
+
+    return NextResponse.json({
+      ok: true,
+      campaignName: campaignName || "",
+      fileId: fileId || "",
+      fileName: fileName || "",
+      total: results.length,
+      success: results.filter((r) => r.ok).length,
+      failed: results.filter((r) => !r.ok).length,
+      results,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: err?.message || "Unexpected server error",
+      },
+      { status: 500 }
+    );
+  }
+}

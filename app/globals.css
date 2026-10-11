@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #f1f5f9;
+  color: #0f172a;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Large-desktop scaling. Every page sizes its text in fixed pixels, so on a
+   wide/high-resolution monitor everything renders tiny and people end up
+   zooming the browser by hand. This scales the whole app up in steps by
+   viewport width instead, targeting an effective layout width of roughly
+   1500-1700px. `zoom` also multiplies vh lengths, so every full-height
+   page uses calc(100vh / var(--ui-zoom, 1)) to cancel that out and avoid
+   a phantom second scrollbar. Phones and normal laptops (under 1800px) are
+   untouched. */
+:root {
+  --ui-zoom: 1;
+}
+
+@media (min-width: 1800px) {
+  :root {
+    --ui-zoom: 1.2;
+  }
+  html {
+    zoom: 1.2;
+  }
+}
+
+@media (min-width: 2200px) {
+  :root {
+    --ui-zoom: 1.5;
+  }
+  html {
+    zoom: 1.5;
+  }
+}
+
+@media (min-width: 2800px) {
+  :root {
+    --ui-zoom: 1.9;
+  }
+  html {
+    zoom: 1.9;
+  }
+}
+
+@media (min-width: 3400px) {
+  :root {
+    --ui-zoom: 2.3;
+  }
+  html {
+    zoom: 2.3;
+  }
+}
+
+/* Shared loading-spinner animation used by every authenticated page's
+   loading screen. Previously several pages (logs, stats, replies,
+   replies/[phone], uploads/[uploadId]) referenced "spin" without ever
+   defining it locally, so their spinner sat frozen instead of spinning.
+   Defining it once, globally, fixes that and removes the need for every
+   page to redeclare it. */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Low Twilio balance attention pulse - used by components/TwilioBalanceCard.tsx
+   once the balance drops below its low-balance threshold. Pulses the card's
+   red glow/border so a low balance is hard to miss in the sidebar instead of
+   sitting there as a static red card someone can scroll past. */
+@keyframes lowBalancePulse {
+  0%,
+  100% {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08), 0 0 0 0 rgba(220, 38, 38, 0.45);
+    border-color: rgba(220, 38, 38, 0.35);
+  }
+  50% {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08), 0 0 0 6px rgba(220, 38, 38, 0);
+    border-color: rgba(248, 113, 113, 0.9);
+  }
+}
+
+@keyframes lowBalanceIconFlicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* "Message sending" loading animation - used by the shared LoadingScreen
+   component (components/LoadingScreen.tsx) across every authenticated page.
+   A small bubble travels from an origin dot to a target dot, leaving a
+   fading trail, simulating an SMS being sent - matches the product instead
+   of a generic spinner. */
+@keyframes messageBubbleSend {
+  0% {
+    transform: translateX(0) scale(0.85);
+    opacity: 0;
+  }
+  15% {
+    transform: translateX(6px) scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: translateX(100px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(112px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes sendTrailFade {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.15);
+  }
+  30% {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes loadingDotBounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
