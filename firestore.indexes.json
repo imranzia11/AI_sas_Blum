@@ -67,22 +67,6 @@
       "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
     },
     {
-      "collectionGroup": "followUps",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "dueAt", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "followUps",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "ownerUid", "order": "ASCENDING" },
-        { "fieldPath": "sentAt", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "conversations",
       "queryScope": "COLLECTION",
       "fields": [

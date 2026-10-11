@@ -15,9 +15,9 @@ import TwilioBalanceCard from "../../components/TwilioBalanceCard";
 // chat-style UI (typing indicator, message bubbles) is purely presentation -
 // the underlying answer is still looked up locally, never generated. Each
 // answer below reflects the ACTUAL current behavior of this system (see
-// app/dashboard/page.tsx SEND_CHUNK_SIZE, getUSPhoneValidation,
-// guessPhoneColumn; app/api/cron/send-followups/route.ts; and
-// app/api/send-sms/twilio/status/route.ts) - if any of that logic changes,
+// app/dashboard/page.tsx SEND_CHUNK_SIZE, getUAEPhoneValidation,
+// guessPhoneColumn; and app/api/send-sms/twilio/status/route.ts) - if any
+// of that logic changes,
 // update the matching answer here too.
 
 type FaqItem = {
@@ -101,55 +101,6 @@ const FAQ_ITEMS: FaqItem[] = [
     ],
     answer:
       "That's a generic delivery-failure code from Twilio (error 30008) - it means the carrier rejected the message without giving a specific reason. It isn't something wrong on our end; it happens occasionally at random across any bulk SMS provider and is usually a temporary carrier-side issue. If you see it a lot for one specific number, it may be worth trying that lead again later.",
-  },
-  {
-    id: "follow-ups",
-    question: "How do follow-up messages work?",
-    category: "Follow-ups",
-    keywords: [
-      "follow up",
-      "followup",
-      "follow-up",
-      "reminder",
-      "second message",
-      "hours",
-      "auto message",
-    ],
-    answer:
-      "Turn on the follow-up checkbox before sending and choose how many hours later it should go out. A background job checks every ~15 minutes for follow-ups that are due and sends them automatically, processing up to 500 at a time. Follow-ups are skipped for numbers that are blocked or opted out (replied STOP), for any original message that permanently failed to deliver, and - checked again right before sending, not just when it was first scheduled - for any lead that has replied at all since the follow-up was queued. Once a customer replies, even something like \"wrong number\" or \"not interested,\" the follow-up won't go out and is marked skipped instead.",
-  },
-  {
-    id: "follow-up-skipped-reply",
-    question: "Why didn't a follow-up go out to someone who replied?",
-    category: "Follow-ups",
-    keywords: [
-      "follow up not sent",
-      "follow-up skipped",
-      "customer replied",
-      "why didn't follow up send",
-      "skipped reason",
-      "already replied",
-    ],
-    answer:
-      "That's expected - a follow-up is automatically skipped if the customer has replied to that conversation at all by the time it's due to send, even if the reply came in after the follow-up was originally scheduled. This check happens right at send time, so a reply that arrives an hour before the follow-up would have gone out still cancels it. It's marked \"skipped\" (not sent), and that conversation shows up under Customer Replied instead.",
-  },
-  {
-    id: "follow-up-overdue",
-    question: "Why does a follow-up show \"Overdue\" before it sends?",
-    category: "Follow-ups",
-    keywords: [
-      "overdue",
-      "late",
-      "delay",
-      "delayed",
-      "running late",
-      "behind",
-      "follow up late",
-      "follow-up overdue",
-      "why is my follow up late",
-    ],
-    answer:
-      "Follow-ups are sent automatically in the background, not the instant they become due - so seeing one marked \"Overdue\" for a few minutes is completely normal, not a failure. During busier periods, especially right after a large campaign where a lot of follow-ups become due around the same time, that delay can stretch a bit longer while they work through the queue - the system now processes up to 500 follow-ups every 15 minutes, so even a large backlog clears fairly quickly. As long as the number shown next to \"Overdue\" isn't climbing indefinitely, it's still on track to send - just give it a little time.",
   },
   {
     id: "opt-out",
@@ -286,7 +237,7 @@ const SUPPORT_URL = "https://wa.me/971523480839";
 const FALLBACK_TEXT =
   "I don't have a confident answer for that one yet. Support can help you sort it out directly.";
 const GREETING_TEXT =
-  "Hi! I'm your Blum WhatsApp help assistant. Ask me about sending limits, file format, follow-ups, opt-outs, or anything else - I'll answer instantly, and point you to support if I'm not sure.";
+  "Hi! I'm your Blum WhatsApp help assistant. Ask me about sending limits, file format, opt-outs, or anything else - I'll answer instantly, and point you to support if I'm not sure.";
 
 type ChatMessage = {
   id: string;

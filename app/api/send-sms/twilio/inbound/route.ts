@@ -232,7 +232,7 @@ function isAbusiveMessage(body: string) {
 // BUG FIX: the only opt-out detection used to be an exact match on the
 // single word "STOP" (see isStop below) - the same canonical keyword
 // Twilio's own compliance filter recognizes. A real customer replied
-// "Opt out" (two words) to a follow-up; normalizeKeyword() upper-cased it
+// "Opt out" (two words); normalizeKeyword() upper-cased it
 // to "OPT OUT", which is never equal to "STOP", so nothing was blocked -
 // they kept being eligible for future sends despite clearly asking to stop.
 // This list catches the common ways people actually phrase an opt-out
@@ -666,8 +666,6 @@ export async function POST(req: NextRequest) {
     // back later. Any new inbound reply now un-resolves the conversation so
     // it falls back into the normal tabs (and shows under Customer Replied,
     // since hasReply/lastDirection above already reflect this new message).
-    // Deliberately does NOT restore any follow-up that was cancelled when it
-    // was closed - same reasoning as the manual Reopen action.
     if (existingConvo.resolved === true) {
       convoUpdate.resolved = false;
       convoUpdate.resolutionOutcome = "";

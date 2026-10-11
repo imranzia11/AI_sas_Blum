@@ -6,8 +6,8 @@ export { BlockedNumberError };
 
 // Single choke point for every outbound Twilio WhatsApp send in the app.
 //
-// Why this exists: send-reply, send-sms, send-sms/twilio, and
-// cron/send-followups each used to build their own Twilio payload inline.
+// Why this exists: send-reply, send-sms, and send-sms/twilio each used
+// to build their own Twilio payload inline.
 // Every one of them sent via `messagingServiceSid` alone, with no `from`.
 // Twilio's Messaging Service is then free to pick ANY number in its sender
 // pool to actually deliver the message — and since multiple users' numbers
@@ -32,7 +32,7 @@ export { BlockedNumberError };
 // requires a pre-approved message Template, sent via `contentSid` +
 // `contentVariables` instead of `body`. Pass `contentSid`/`contentVariables`
 // for template sends (see app/api/send-sms/twilio/route.ts); leave them
-// unset and pass `body` for in-window replies and follow-ups.
+// unset and pass `body` for in-window replies.
 
 export type SendSmsUserData = {
   twilioNumber?: string;

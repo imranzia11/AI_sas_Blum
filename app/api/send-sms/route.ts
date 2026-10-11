@@ -407,15 +407,6 @@ export async function POST(req: NextRequest) {
           updatedAt: FieldValue.serverTimestamp(),
         });
 
-        // Follow-up scheduling is handled separately by the dedicated
-        // /api/schedule-follow-up route (called by the dashboard right
-        // after this send succeeds). An older inline version used to live
-        // here, but it was dead code - the dashboard never actually sends
-        // followUpEnabled/sendAfterHours to this endpoint - and it lacked
-        // the blacklist pre-check and duplicate-follow-up prevention that
-        // /api/schedule-follow-up has. Removed to avoid it ever being wired
-        // up again and reintroducing those gaps.
-
         results.push({
           name: lead.name,
           phone: formattedPhone,

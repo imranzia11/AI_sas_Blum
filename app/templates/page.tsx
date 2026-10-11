@@ -24,7 +24,6 @@ type SlotState = {
   slot: number;
   name: string;
   smsMessage: string;
-  followUpMessage: string;
   saving: boolean;
 };
 
@@ -40,7 +39,6 @@ function makeEmptySlots(): SlotState[] {
     slot: i + 1,
     name: `Template ${i + 1}`,
     smsMessage: COMPLIANCE_FOOTER,
-    followUpMessage: COMPLIANCE_FOOTER,
     saving: false,
   }));
 }
@@ -158,7 +156,6 @@ export default function TemplatesPage() {
             ...slot,
             name: String(data.name || slot.name),
             smsMessage: String(data.smsMessage || COMPLIANCE_FOOTER),
-            followUpMessage: String(data.followUpMessage || COMPLIANCE_FOOTER),
           };
         })
       );
@@ -205,17 +202,6 @@ export default function TemplatesPage() {
       return;
     }
 
-    if (
-      slot.followUpMessage.trim() &&
-      !containsComplianceLine(slot.followUpMessage)
-    ) {
-      showToast(
-        `Don't remove "${COMPLIANCE_FOOTER}" from the follow-up message in "${slotLabel}".`,
-        "error"
-      );
-      return;
-    }
-
     updateSlot(slotNum, { saving: true });
 
     try {
@@ -227,7 +213,6 @@ export default function TemplatesPage() {
           slot: slotNum,
           name: slot.name.trim() || `Template ${slotNum}`,
           smsMessage: slot.smsMessage.trim(),
-          followUpMessage: slot.followUpMessage.trim(),
           updatedAt: serverTimestamp(),
         },
         { merge: true }
@@ -251,7 +236,6 @@ export default function TemplatesPage() {
     updateSlot(slotNum, {
       name: `Template ${slotNum}`,
       smsMessage: COMPLIANCE_FOOTER,
-      followUpMessage: COMPLIANCE_FOOTER,
     });
   };
 
@@ -365,18 +349,16 @@ export default function TemplatesPage() {
                 <h1 style={heroTitleStyle}>Set up your templates</h1>
                 <p style={heroTextStyle}>
                   Fill in up to {TOTAL_SLOTS} reusable templates, each with its
-                  own SMS message and follow-up message. Save a template here
-                  and it shows up in the "Load a saved template" dropdown on
-                  the dashboard.
+                  own WhatsApp message. Save a template here and it shows up
+                  in the "Load a saved template" dropdown on the dashboard.
                 </p>
               </div>
             </div>
 
             <div style={complianceBannerStyle}>
-              <strong>⚠️ Do not delete "{COMPLIANCE_FOOTER}"</strong> from any
-              SMS or follow-up message. It's pre-filled in every template and
-              is required for SMS compliance — saving is blocked if it's
-              removed.
+              <strong>⚠️ Do not delete "{COMPLIANCE_FOOTER}"</strong> from the
+              SMS message. It's pre-filled in every template and is required
+              for SMS compliance — saving is blocked if it's removed.
             </div>
 
             <div style={slotsGridStyle}>
@@ -415,27 +397,6 @@ export default function TemplatesPage() {
                     </div>
                   ) : null}
 
-                  <label style={{ ...fieldLabelStyle, marginTop: 14 }}>
-                    Follow-up message
-                  </label>
-                  <textarea
-                    value={slot.followUpMessage}
-                    onChange={(e) =>
-                      updateSlot(slot.slot, {
-                        followUpMessage: e.target.value,
-                      })
-                    }
-                    rows={3}
-                    placeholder="Hey, following up to know if you're still interested."
-                    style={fieldTextareaStyle}
-                  />
-                  {slot.followUpMessage.trim() &&
-                  !containsComplianceLine(slot.followUpMessage) ? (
-                    <div style={complianceWarningStyle}>
-                      Missing required opt-out line — saving is disabled
-                      until it's added back.
-                    </div>
-                  ) : null}
 
                   <div style={slotActionsStyle}>
                     <button

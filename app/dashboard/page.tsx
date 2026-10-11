@@ -66,7 +66,6 @@ type TemplateItem = {
   slot: number;
   name: string;
   smsMessage: string;
-  followUpMessage: string;
 };
 
 // --- Instant-paint cache for uploads/templates -------------------------
@@ -145,11 +144,6 @@ function getInitialDashboardCache(): DashboardCache | null {
 // No pre-filled message - the box starts empty and shows a placeholder
 // instead, so every campaign is written fresh or loaded from a template.
 const DEFAULT_SMS_MESSAGE = "";
-
-const DEFAULT_FOLLOW_UP_MESSAGE =
-  "Hey, following up to know if you're still interested.";
-
-const FOLLOW_UP_HOUR_OPTIONS = [4, 6, 8, 12, 24];
 
 // Firebase App Hosting kills a request after ~5 minutes, and /api/send-sms
 // processes each lead sequentially (a few Firestore reads/writes + one
@@ -369,12 +363,6 @@ export default function DashboardPage() {
   const [campaignName, setCampaignName] = useState("");
   const [singlePhoneNumber, setSinglePhoneNumber] = useState("");
 
-  const [followUpEnabled, setFollowUpEnabled] = useState(false);
-  const [followUpMessage, setFollowUpMessage] = useState(
-    DEFAULT_FOLLOW_UP_MESSAGE
-  );
-  const [followUpHours, setFollowUpHours] = useState<number>(4);
-
   const [templates, setTemplates] = useState<TemplateItem[]>(
     () => getInitialDashboardCache()?.templates || []
   );
@@ -488,20 +476,15 @@ export default function DashboardPage() {
           String(data.twilioNumber || data.assignedTwilioNumber || "").trim()
         );
 
-        // Restore whatever follow-up settings this user last sent with, so
-        // the checkbox/message/hours don't silently reset to "off" on every
-        // page reload. Without this, a client who turned follow-up on once
-        // has no way of knowing it went back to off the next time they
-        // visit - the send still succeeds normally, so nothing looks wrong.
-        const savedSettings = data.lastFollowUpSettings || {};
+        // Restore which template (and message text) was last used, so the
+        // "Load a saved template" dropdown and SMS Message box come back
+        // exactly as they were left. Templates load in parallel above
+        // (loadTemplates(user.uid)) and may not have resolved yet, but
+        // that's fine: the dropdown's value is just an id string, it
+        // renders correctly as soon as the matching <option> arrives from
+        // that separate fetch.
+        const savedSettings = data.lastCampaignSettings || {};
 
-        // Also restore which template (and message text) was last used, so
-        // the "Load a saved template" dropdown and SMS Message box come
-        // back exactly as they were left - not just the follow-up fields.
-        // Templates load in parallel above (loadTemplates(user.uid)) and
-        // may not have resolved yet, but that's fine: the dropdown's value
-        // is just an id string, it renders correctly as soon as the
-        // matching <option> arrives from that separate fetch.
         if (
           typeof savedSettings.selectedTemplateId === "string" &&
           savedSettings.selectedTemplateId
@@ -513,22 +496,6 @@ export default function DashboardPage() {
           savedSettings.message.trim()
         ) {
           setMessage(savedSettings.message);
-        }
-
-        if (typeof savedSettings.followUpEnabled === "boolean") {
-          setFollowUpEnabled(savedSettings.followUpEnabled);
-        }
-        if (
-          typeof savedSettings.followUpMessage === "string" &&
-          savedSettings.followUpMessage.trim()
-        ) {
-          setFollowUpMessage(savedSettings.followUpMessage);
-        }
-        if (
-          typeof savedSettings.followUpHours === "number" &&
-          savedSettings.followUpHours > 0
-        ) {
-          setFollowUpHours(savedSettings.followUpHours);
         }
 
         setChecking(false);
@@ -678,7 +645,6 @@ export default function DashboardPage() {
             slot: Number(data.slot || 0),
             name: String(data.name || `Template ${data.slot || ""}`).trim(),
             smsMessage: String(data.smsMessage || ""),
-            followUpMessage: String(data.followUpMessage || ""),
           };
         })
         .filter((t) => t.smsMessage.trim() !== "")
@@ -733,18 +699,6 @@ export default function DashboardPage() {
 
     setMessage(template.smsMessage);
 
-    const nextFollowUpEnabled = template.followUpMessage.trim()
-      ? true
-      : followUpEnabled;
-    const nextFollowUpMessage = template.followUpMessage.trim()
-      ? template.followUpMessage
-      : followUpMessage;
-
-    if (template.followUpMessage.trim()) {
-      setFollowUpMessage(template.followUpMessage);
-      setFollowUpEnabled(true);
-    }
-
     showToast(`Loaded "${template.name}" into the message fields.`, "success");
 
     // Save this choice immediately, not just after the next send - without
@@ -753,11 +707,9 @@ export default function DashboardPage() {
     // actually sent instead of what was just selected.
     const uid = auth.currentUser?.uid;
     if (uid) {
-      void persistFollowUpSettings(uid, {
+      void persistCampaignSettings(uid, {
         selectedTemplateId: value,
         message: template.smsMessage,
-        followUpEnabled: nextFollowUpEnabled,
-        followUpMessage: nextFollowUpMessage,
       });
     }
   };
@@ -910,133 +862,36 @@ export default function DashboardPage() {
     }
   };
 
-  // Remembers whatever follow-up settings were just used (on or off) so the
-  // next visit restores them instead of silently defaulting back to off.
-  // Best-effort: a failure here should never block the send flow the user
-  // is actually waiting on.
-  const persistFollowUpSettings = async (
+  // Remembers whichever template/message this user last sent with, so the
+  // next visit restores it instead of silently resetting. Best-effort: a
+  // failure here should never block the send flow the user is actually
+  // waiting on.
+  const persistCampaignSettings = async (
     uid: string,
     overrides?: Partial<{
       selectedTemplateId: string;
       message: string;
-      followUpEnabled: boolean;
-      followUpMessage: string;
-      followUpHours: number;
     }>
   ) => {
     // Accepts overrides because React state setters are async - a caller
-    // that just called setMessage(...)/setFollowUpEnabled(...) a line above
-    // would otherwise read the OLD values here (this closure's `message`/
-    // `followUpEnabled` etc. haven't re-rendered yet). Passing the
-    // just-computed values directly avoids saving stale data.
+    // that just called setMessage(...) a line above would otherwise read
+    // the OLD value here (this closure's `message` hasn't re-rendered
+    // yet). Passing the just-computed values directly avoids saving stale
+    // data.
     try {
       await setDoc(
         doc(db, "users", uid),
         {
-          lastFollowUpSettings: {
+          lastCampaignSettings: {
             selectedTemplateId,
             message,
-            followUpEnabled,
-            followUpMessage,
-            followUpHours,
             ...overrides,
           },
         },
         { merge: true }
       );
     } catch (error) {
-      console.error("Failed to save last follow-up settings (non-fatal)", error);
-    }
-  };
-
-  const scheduleFollowUp = async (params: {
-    idToken: string;
-    campaignName: string;
-    fileId: string;
-    fileName: string;
-    recipients: { name: string; phone: string }[];
-    // When true, suppresses this function's own toast - used when calling
-    // it once per SMS chunk (see handleSendSms) so a large send doesn't
-    // spam a toast every ~150 recipients. The caller shows one aggregate
-    // toast at the end instead.
-    silent?: boolean;
-  }) => {
-    if (!followUpEnabled) {
-      return { ok: true, scheduled: 0, attempted: 0 };
-    }
-
-    if (!followUpMessage.trim()) {
-      if (!params.silent) {
-        showToast(
-          "Follow-up is enabled but the follow-up message is empty, so it was not scheduled.",
-          "error"
-        );
-      }
-      return { ok: false, scheduled: 0, attempted: params.recipients.length };
-    }
-
-    try {
-      const res = await fetch("/api/schedule-follow-up", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${params.idToken}`,
-        },
-        body: JSON.stringify({
-          campaignName: params.campaignName,
-          fileId: params.fileId,
-          fileName: params.fileName,
-          message: followUpMessage.trim(),
-          delayHours: followUpHours,
-          recipients: params.recipients,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.ok) {
-        if (!params.silent) {
-          showToast(
-            data.error || "Failed to schedule the follow-up message.",
-            "error"
-          );
-        }
-        return {
-          ok: false,
-          scheduled: 0,
-          attempted: params.recipients.length,
-          error: data.error,
-        };
-      }
-
-      if (!params.silent) {
-        showToast(
-          `Follow-up scheduled for ${followUpHours}h from now (${params.recipients.length} recipient${
-            params.recipients.length === 1 ? "" : "s"
-          }).`,
-          "success"
-        );
-      }
-
-      return {
-        ok: true,
-        scheduled: typeof data.scheduled === "number" ? data.scheduled : params.recipients.length,
-        attempted: params.recipients.length,
-      };
-    } catch (error: any) {
-      console.error(error);
-      if (!params.silent) {
-        showToast(
-          error?.message || "Unexpected error while scheduling follow-up.",
-          "error"
-        );
-      }
-      return {
-        ok: false,
-        scheduled: 0,
-        attempted: params.recipients.length,
-        error: error?.message,
-      };
+      console.error("Failed to save last campaign settings (non-fatal)", error);
     }
   };
 
@@ -1096,20 +951,6 @@ export default function DashboardPage() {
       let totalAttempted = 0;
       let anyChunkErrored = false;
 
-      // Follow-up scheduling happens PER CHUNK now, right after that
-      // chunk's SMS send, instead of once at the very end with the whole
-      // list. This fixes a real bug: scheduling once at the end reused the
-      // idToken captured before the loop started, and a large send (e.g.
-      // 5,000 leads across ~34 chunks) can easily run long enough for that
-      // token to expire - when it does, the ONE follow-up request for
-      // every single recipient fails at once, so NOBODY gets a follow-up
-      // even though every message sent fine. Scheduling per chunk with a
-      // freshly-fetched token means a failure only ever costs that one
-      // chunk's ~150 recipients, not the entire blast.
-      let followUpScheduledTotal = 0;
-      let followUpAttemptedTotal = 0;
-      let anyFollowUpChunkErrored = false;
-
       for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
         const chunk = chunks[chunkIndex];
 
@@ -1121,16 +962,12 @@ export default function DashboardPage() {
         });
 
         // Fresh token per chunk - a large send can run long enough for the
-        // original getIdToken() result to be close to expiring. Reused for
-        // both this chunk's SMS send and its follow-up scheduling call
-        // right below.
+        // original getIdToken() result to be close to expiring.
         const chunkToken = chunks.length > 1 ? await user.getIdToken() : idToken;
         const chunkRecipients = chunk.map((lead) => ({
           name: lead.name || "",
           phone: lead.phone || "",
         }));
-
-        let chunkSendOk = false;
 
         try {
           const res = await fetch("/api/send-sms", {
@@ -1159,7 +996,6 @@ export default function DashboardPage() {
             totalSuccess += data.success || 0;
             totalFailed += data.failed || 0;
             totalAttempted += data.total || chunk.length;
-            chunkSendOk = true;
           }
         } catch (chunkError) {
           // One chunk failing outright (network blip, etc.) must not stop
@@ -1169,24 +1005,6 @@ export default function DashboardPage() {
           totalFailed += chunk.length;
           totalAttempted += chunk.length;
           console.error("Chunk request failed", chunkError);
-        }
-
-        if (chunkSendOk) {
-          const followUpResult = await scheduleFollowUp({
-            idToken: chunkToken,
-            campaignName: resolvedCampaignName,
-            fileId: selectedUploadId,
-            fileName: selectedUpload.fileName,
-            recipients: chunkRecipients,
-            silent: true,
-          });
-
-          followUpScheduledTotal += followUpResult.scheduled;
-          followUpAttemptedTotal += followUpResult.attempted;
-          if (!followUpResult.ok) {
-            anyFollowUpChunkErrored = true;
-            console.error("Follow-up scheduling failed for chunk", followUpResult.error);
-          }
         }
       }
 
@@ -1215,31 +1033,16 @@ export default function DashboardPage() {
             : "completed",
         createdByName: userName,
         createdAt: serverTimestamp(),
-        followUpEnabled,
-        followUpHours: followUpEnabled ? followUpHours : null,
       });
 
-      // Combined into ONE toast call - showToast only has a single slot
-      // (toastMessage/toastOpen are single values, not a queue), so firing
-      // it twice back-to-back would just silently overwrite the first
-      // message before React ever painted it. That was a real bug: the
-      // "SMS finished" summary was never actually visible, only whichever
-      // follow-up toast came right after it.
       let summary = `SMS finished. Sent: ${totalSuccess}, Failed: ${totalFailed}, Total Verified Sent Attempted: ${totalAttempted}.`;
       if (anyChunkErrored) {
         summary += " Some batches hit a network/server error - check the count above against your list.";
       }
 
-      if (followUpEnabled) {
-        summary += ` Follow-ups: ${followUpScheduledTotal} of ${followUpAttemptedTotal} scheduled for ${followUpHours}h from now.`;
-        if (anyFollowUpChunkErrored) {
-          summary += " Some batches failed to schedule - check the Follow-Ups tab against your list.";
-        }
-      }
-
       showToast(
         summary,
-        anyChunkErrored || anyFollowUpChunkErrored
+        anyChunkErrored
           ? "error"
           : totalFailed > 0
           ? "info"
@@ -1315,7 +1118,7 @@ export default function DashboardPage() {
         ownerUid: user.uid,
         createdBy: user.uid,
         uploadId: "",
-        fileName: "Single USA Number",
+        fileName: "Single UAE Number",
         name: directCampaignName,
         message: message.trim(),
         totalRecipients: 1,
@@ -1326,34 +1129,11 @@ export default function DashboardPage() {
         createdAt: serverTimestamp(),
         isDirectSend: true,
         directPhone: validation.normalized,
-        followUpEnabled,
-        followUpHours: followUpEnabled ? followUpHours : null,
       });
 
-      // Same single-toast-slot issue as handleSendSms - scheduleFollowUp
-      // called silently here and folded into one combined message below,
-      // instead of firing its own toast right after this one and silently
-      // overwriting it before it's ever seen.
-      const followUpResult = await scheduleFollowUp({
-        idToken,
-        campaignName: directCampaignName,
-        fileId: "",
-        fileName: "Single USA Number",
-        recipients: [{ name: "", phone: validation.normalized }],
-        silent: true,
-      });
+      const summary = `Message sent. Sent: ${data.success}, Failed: ${data.failed}.`;
 
-      let summary = `Message sent. Sent: ${data.success}, Failed: ${data.failed}.`;
-      if (followUpEnabled) {
-        summary += followUpResult.ok
-          ? ` Follow-up scheduled for ${followUpHours}h from now.`
-          : ` Follow-up NOT scheduled: ${followUpResult.error || "unknown error"}.`;
-      }
-
-      showToast(
-        summary,
-        data.failed > 0 || !followUpResult.ok ? "info" : "success"
-      );
+      showToast(summary, data.failed > 0 ? "info" : "success");
 
       setSinglePhoneNumber("");
     } catch (error: any) {
@@ -2130,85 +1910,6 @@ Beta Version
                     <strong>{message.length}</strong>
                   </div>
 
-                  <div style={followUpCardStyle}>
-                    <label style={followUpCheckboxRowStyle}>
-                      <input
-                        type="checkbox"
-                        checked={followUpEnabled}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          setFollowUpEnabled(checked);
-                          const uid = auth.currentUser?.uid;
-                          if (uid) {
-                            void persistFollowUpSettings(uid, {
-                              followUpEnabled: checked,
-                            });
-                          }
-                        }}
-                        style={followUpCheckboxStyle}
-                      />
-                      <div>
-                        <div style={followUpCheckboxTitleStyle}>
-                          Send an automated follow-up message
-                        </div>
-                        <div style={followUpCheckboxSubStyle}>
-                          Automatically re-message recipients if they haven't
-                          replied.
-                        </div>
-                      </div>
-                    </label>
-
-                    {followUpEnabled ? (
-                      <div style={followUpBodyStyle}>
-                        <div>
-                          <label style={fieldLabelStyle}>
-                            Follow-up Message
-                          </label>
-                          <textarea
-                            value={followUpMessage}
-                            onChange={(e) =>
-                              setFollowUpMessage(e.target.value)
-                            }
-                            rows={4}
-                            style={fieldTextareaStyle}
-                          />
-                        </div>
-
-                        <div style={{ marginTop: 16 }}>
-                          <label style={fieldLabelStyle}>Send After</label>
-                          <div style={followUpHourOptionsStyle}>
-                            {FOLLOW_UP_HOUR_OPTIONS.map((hours) => {
-                              const active = followUpHours === hours;
-                              return (
-                                <button
-                                  key={hours}
-                                  type="button"
-                                  onClick={() => {
-                                    setFollowUpHours(hours);
-                                    const uid = auth.currentUser?.uid;
-                                    if (uid) {
-                                      void persistFollowUpSettings(uid, {
-                                        followUpHours: hours,
-                                      });
-                                    }
-                                  }}
-                                  style={{
-                                    ...followUpHourChipStyle,
-                                    ...(active
-                                      ? followUpHourChipActiveStyle
-                                      : null),
-                                  }}
-                                >
-                                  {hours} hour{hours === 1 ? "" : "s"}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-
                   <div style={sendActionWrapStyle}>
                     <button
                       onClick={handleSendSms}
@@ -2363,18 +2064,14 @@ Beta Version
                     />
                     <GuideItem
                       number="3"
-                      text="Only verified US leads will be used for the campaign."
+                      text="Only verified UAE leads will be used for the campaign."
                     />
                     <GuideItem
                       number="4"
-                      text="You can also send directly to one USA number from the quick send box."
+                      text="You can also send directly to one UAE number from the quick send box."
                     />
                     <GuideItem
                       number="5"
-                      text="Enable the follow-up checkbox to automatically re-message recipients after a set number of hours."
-                    />
-                    <GuideItem
-                      number="6"
                       text="Set up reusable templates from the Templates page and load them here in one click."
                     />
                   </div>
@@ -2414,17 +2111,6 @@ function GlobalStyles() {
         100% {
           opacity: 1;
           transform: translateY(0) scale(1);
-        }
-      }
-
-      @keyframes followUpDropIn {
-        0% {
-          opacity: 0;
-          transform: translateY(-8px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
         }
       }
 
@@ -3208,74 +2894,6 @@ const messageHintStyle: CSSProperties = {
   alignItems: "center",
   color: "#64748b",
   fontSize: 15,
-};
-
-const followUpCardStyle: CSSProperties = {
-  marginTop: 18,
-  borderRadius: 20,
-  border: "1px solid #dbe3ed",
-  background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
-  padding: 18,
-};
-
-const followUpCheckboxRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "flex-start",
-  gap: 12,
-  cursor: "pointer",
-};
-
-const followUpCheckboxStyle: CSSProperties = {
-  width: 20,
-  height: 20,
-  marginTop: 2,
-  accentColor: "#0d9488",
-  cursor: "pointer",
-  flexShrink: 0,
-};
-
-const followUpCheckboxTitleStyle: CSSProperties = {
-  color: "#0f172a",
-  fontSize: 17,
-  fontWeight: 800,
-};
-
-const followUpCheckboxSubStyle: CSSProperties = {
-  marginTop: 4,
-  color: "#64748b",
-  fontSize: 15,
-  lineHeight: 1.5,
-};
-
-const followUpBodyStyle: CSSProperties = {
-  marginTop: 16,
-  paddingTop: 16,
-  borderTop: "1px dashed #dbe3ed",
-  animation: "followUpDropIn 0.18s ease-out",
-};
-
-const followUpHourOptionsStyle: CSSProperties = {
-  display: "flex",
-  gap: 10,
-  flexWrap: "wrap",
-};
-
-const followUpHourChipStyle: CSSProperties = {
-  border: "1px solid #dbe3ed",
-  borderRadius: 999,
-  padding: "10px 16px",
-  background: "#ffffff",
-  color: "#334155",
-  fontWeight: 800,
-  fontSize: 15,
-  cursor: "pointer",
-};
-
-const followUpHourChipActiveStyle: CSSProperties = {
-  border: "1px solid #0d9488",
-  background: "#0d9488",
-  color: "#ffffff",
-  boxShadow: "0 10px 20px rgba(13,148,136,0.25)",
 };
 
 const sendActionWrapStyle: CSSProperties = {

@@ -212,8 +212,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Best-effort audit trail via the admin SDK (bypasses Firestore rules
-    // entirely, same as followUps/schedule-follow-up - no client-side rule
-    // changes needed for this collection).
+    // entirely - no client-side rule changes needed for this collection).
     try {
       await adminDb.collection("emailCampaigns").add({
         ownerUid: uid,

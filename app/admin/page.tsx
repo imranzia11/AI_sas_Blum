@@ -174,9 +174,6 @@ export default function AdminOverviewPage() {
             <Link href="/admin/broadcast" style={diagnoseLinkStyle}>
               Send Update
             </Link>
-            <Link href="/admin/diagnose" style={diagnoseLinkStyle}>
-              Diagnose Follow-Ups
-            </Link>
             <button onClick={handleLogout} style={logoutButtonStyle}>
               Log out
             </button>

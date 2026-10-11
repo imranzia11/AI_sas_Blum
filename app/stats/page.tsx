@@ -29,11 +29,6 @@ import TwilioBalanceCard from "../../components/TwilioBalanceCard";
 // query pattern as /logs, so it can never fail under the security rules
 // and can never show one account's numbers to another.
 //
-// "Sent" counts BOTH regular sends/replies (root `messages` collection) and
-// follow-ups (their own `followUps` collection, status "sent") - see the
-// comment on accumulateDayCounts below for why those live in two different
-// places and both have to be queried to get a true day total.
-
 type AppUser = {
   uid: string;
   isActive: boolean;
@@ -137,15 +132,6 @@ export default function StatsPage() {
   // there's nothing left, instead of picking a bigger-but-still-arbitrary
   // ceiling.
   //
-  // Bucketed into a shared `counts` object passed in by the caller, rather
-  // than returning its own - the root `messages` collection covers regular
-  // sends and manual replies, but the follow-up cron only ever logs a sent
-  // follow-up's OWN status onto its `followUps` doc (as "sent" + `sentAt`),
-  // never into this root collection - see the near-identical comment on
-  // /api/admin/overview's route. A follow-up-only day would otherwise show
-  // as 0 here even though real SMS went out, so this same helper is called
-  // once per collection/timestamp-field/status-check combo below and both
-  // runs add into the same day buckets.
   const accumulateDayCounts = async (
     counts: Record<number, number>,
     collectionName: string,
@@ -218,20 +204,6 @@ export default function StatsPage() {
         start,
         end,
         isSuccessfulStatus
-      );
-
-      // Follow-ups only ever reach "sent" on their own doc (never
-      // "delivered" - their actual delivery status lands on the conversation
-      // subcollection message instead, which the block above doesn't touch
-      // since it queries the root `messages` collection only).
-      await accumulateDayCounts(
-        counts,
-        "followUps",
-        "sentAt",
-        currentProfile.uid,
-        start,
-        end,
-        (status) => status === "sent"
       );
 
       setDayCounts(counts);
@@ -422,7 +394,7 @@ Beta Version
           <section style={panelStyle}>
             <div style={panelHeaderStyle}>
               <h2 style={panelTitleStyle}>{formatMonthLabel(selectedMonth)}</h2>
-              <p style={panelDescStyle}>Successfully sent messages, per day (includes follow-ups)</p>
+              <p style={panelDescStyle}>Successfully sent messages, per day</p>
             </div>
 
             {loading ? (

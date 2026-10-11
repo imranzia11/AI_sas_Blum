@@ -51,28 +51,12 @@ export async function GET(req: NextRequest) {
           const uid = userDoc.id;
           const data = userDoc.data() || {};
 
-          // Two sources, summed: the root `messages` collection covers
-          // every regular send and manual reply, but the follow-up cron
-          // (app/api/cron/send-followups/route.ts) only ever logs a sent
-          // follow-up into the conversation's messages SUBcollection, never
-          // this root one - so a follow-up-only send would otherwise be
-          // invisible here. followUps (status=="sent") fills that gap.
-          // Both queries are equality-only filters, so neither needs a new
-          // composite index.
-          const [sentSnap, followUpSentSnap] = await Promise.all([
-            adminDb
-              .collection("messages")
-              .where("ownerUid", "==", uid)
-              .where("direction", "==", "outbound")
-              .count()
-              .get(),
-            adminDb
-              .collection("followUps")
-              .where("ownerUid", "==", uid)
-              .where("status", "==", "sent")
-              .count()
-              .get(),
-          ]);
+          const sentSnap = await adminDb
+            .collection("messages")
+            .where("ownerUid", "==", uid)
+            .where("direction", "==", "outbound")
+            .count()
+            .get();
 
           return {
             uid,
@@ -82,7 +66,7 @@ export async function GET(req: NextRequest) {
             twilioNumber: String(
               data.twilioNumber || data.assignedTwilioNumber || ""
             ),
-            smsSentCount: sentSnap.data().count + followUpSentSnap.data().count,
+            smsSentCount: sentSnap.data().count,
           };
         })
     );

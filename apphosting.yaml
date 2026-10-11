@@ -1,8 +1,4 @@
 env:
-  - variable: CRON_SECRET
-    secret: CRON_SECRET
-    availability:
-      - RUNTIME
   # Needed at RUNTIME only (never BUILD) - lib/emailSend.ts reads this
   # lazily the first time an email is actually sent, same pattern as the
   # Twilio credentials. Without this declared here, .env.local values never

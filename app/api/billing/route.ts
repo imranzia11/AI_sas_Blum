@@ -14,8 +14,6 @@ import { getNYMonthRangeUtc, currentNYMonthString, nyDateKey } from "../../../li
 // Sources, matching how the rest of the app already defines "sent" and
 // "received":
 //  - sent:     root `messages` (direction outbound, not failed/undelivered)
-//              plus `followUps` with status "sent" (the follow-up cron never
-//              logs into root `messages`)
 //  - received: root `replies` (one doc per inbound Twilio SID)
 // Every query reuses an index already in firestore.indexes.json.
 
@@ -59,20 +57,13 @@ export async function GET(req: NextRequest) {
       : currentNYMonthString();
     const { start, end, daysInMonth } = getNYMonthRangeUtc(month);
 
-    const [outboundSnap, followUpSnap, receivedCount] = await Promise.all([
+    const [outboundSnap, receivedCount] = await Promise.all([
       adminDb
         .collection("messages")
         .where("ownerUid", "==", uid)
         .where("createdAt", ">=", start)
         .where("createdAt", "<", end)
         .select("direction", "status", "createdAt")
-        .get(),
-      adminDb
-        .collection("followUps")
-        .where("ownerUid", "==", uid)
-        .where("sentAt", ">=", start)
-        .where("sentAt", "<", end)
-        .select("status", "sentAt")
         .get(),
       adminDb
         .collection("replies")
@@ -100,15 +91,6 @@ export async function GET(req: NextRequest) {
       const data = d.data();
       if (data.direction !== "outbound" || isFailedStatus(data.status)) return;
       const day = dayOf(data.createdAt);
-      if (day === null) return;
-      sent += 1;
-      sentByDay[day] = (sentByDay[day] || 0) + 1;
-    });
-
-    followUpSnap.docs.forEach((d) => {
-      const data = d.data();
-      if (String(data.status || "").toLowerCase() !== "sent") return;
-      const day = dayOf(data.sentAt);
       if (day === null) return;
       sent += 1;
       sentByDay[day] = (sentByDay[day] || 0) + 1;

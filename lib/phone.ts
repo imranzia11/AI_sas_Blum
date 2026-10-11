@@ -1,5 +1,5 @@
 // Shared phone-number helpers. Previously this exact function was copy-pasted
-// into send-reply, send-sms, send-sms/twilio, and cron/send-followups — kept
+// into send-reply, send-sms, and send-sms/twilio — kept
 // here once so every call site normalizes numbers identically.
 
 export function toE164(raw: string) {
