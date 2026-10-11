@@ -1,3 +1,5 @@
+# apphosting.yaml
+
 env:
   # Needed at RUNTIME only (never BUILD) - lib/emailSend.ts reads this
   # lazily the first time an email is actually sent, same pattern as the
@@ -7,6 +9,43 @@ env:
     secret: SENDGRID_API_KEY
     availability:
       - RUNTIME
+
+  # Firebase web app config - not secret (these are public client-side
+  # identifiers restricted by Firebase Security Rules, same as any other
+  # Firebase web app), safe to commit. Needed at BUILD time since
+  # NEXT_PUBLIC_ vars get baked into the client bundle by Next.js; included
+  # at RUNTIME too since server-rendered pages also import lib/firebase.ts.
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyBnl4d7DJ6qY7i08hTBiISWS9f6L5wiou0"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "blum-ai-tool.firebaseapp.com"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "blum-ai-tool"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "blum-ai-tool.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "336576487737"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:336576487737:web:9eb3c22f94d23159e388e8"
+    availability:
+      - BUILD
+      - RUNTIME
+
   # Public Web Push key (not secret - safe to commit, same as the Firebase
   # web config already hardcoded in lib/firebase.ts). Needed at BUILD time
   # since NEXT_PUBLIC_ vars get baked into the client bundle by Next.js.
