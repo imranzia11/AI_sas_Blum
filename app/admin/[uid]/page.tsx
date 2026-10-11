@@ -318,13 +318,13 @@ export default function AdminAccountDetailPage({
                 label="Sent Today"
                 value={account.todaySentCount}
                 revealed={revealed}
-                accent="#14b8a6"
+                accent="#ec4899"
               />
               <StatRing
                 label="Total Sent"
                 value={account.smsSentCount}
                 revealed={revealed}
-                accent="#0f766e"
+                accent="#be185d"
               />
             </div>
 
@@ -402,7 +402,7 @@ export default function AdminAccountDetailPage({
 
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
-  background: "#f4fbf9",
+  background: "#fdf2f6",
   paddingBottom: 60,
 };
 
@@ -410,14 +410,14 @@ const heroStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: "0 0 32px 32px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
   padding: "32px 48px 40px",
 };
 
 const backLinkStyle: CSSProperties = {
   display: "inline-block",
-  color: "rgba(236, 254, 255, 0.82)",
+  color: "rgba(255,241,242, 0.82)",
   fontSize: 13.5,
   fontWeight: 700,
   textDecoration: "none",
@@ -425,7 +425,7 @@ const backLinkStyle: CSSProperties = {
 
 const heroLoadingStyle: CSSProperties = {
   marginTop: 20,
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 15,
 };
 
@@ -439,7 +439,7 @@ const heroTitleStyle: CSSProperties = {
 const heroSubStyle: CSSProperties = {
   margin: "6px 0 0 0",
   fontSize: 14.5,
-  color: "rgba(236, 254, 255, 0.8)",
+  color: "rgba(255,241,242, 0.8)",
 };
 
 const heroMetaRowStyle: CSSProperties = {
@@ -474,7 +474,7 @@ const twilioBadgeStyle: CSSProperties = {
   fontSize: 12.5,
   fontWeight: 700,
   background: "rgba(255,255,255,0.14)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontFamily: "'IBM Plex Mono', monospace",
 };
 
@@ -493,9 +493,9 @@ const ringsRowStyle: CSSProperties = {
 const ringCardStyle: CSSProperties = {
   background: "#ffffff",
   borderRadius: 24,
-  border: "1px solid #e2ede9",
+  border: "1px solid #ede2e7",
   padding: "20px 24px",
-  boxShadow: "0 12px 30px rgba(15, 118, 110, 0.08)",
+  boxShadow: "0 12px 30px rgba(190,24,93, 0.08)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -532,14 +532,14 @@ const chartBarTrackStyle: CSSProperties = {
   maxWidth: 36,
   display: "flex",
   alignItems: "flex-end",
-  background: "#f4fbf9",
+  background: "#fdf2f6",
   borderRadius: 10,
   overflow: "hidden",
 };
 
 const chartBarFillStyle: CSSProperties = {
   width: "100%",
-  background: "linear-gradient(180deg, #14b8a6 0%, #0f766e 100%)",
+  background: "linear-gradient(180deg, #ec4899 0%, #be185d 100%)",
   borderRadius: 10,
   transition: "height 0.8s ease-out",
 };
@@ -561,10 +561,10 @@ const tabRowStyle: CSSProperties = {
   gap: 8,
   background: "#ffffff",
   borderRadius: 999,
-  border: "1px solid #e2ede9",
+  border: "1px solid #ede2e7",
   padding: 6,
   width: "fit-content",
-  boxShadow: "0 12px 30px rgba(15, 118, 110, 0.08)",
+  boxShadow: "0 12px 30px rgba(190,24,93, 0.08)",
 };
 
 const tabButtonStyle: CSSProperties = {
@@ -579,7 +579,7 @@ const tabButtonStyle: CSSProperties = {
 };
 
 const tabButtonActiveStyle: CSSProperties = {
-  background: "#0f766e",
+  background: "#be185d",
   color: "#ffffff",
 };
 
@@ -587,9 +587,9 @@ const panelStyle: CSSProperties = {
   marginTop: 20,
   background: "#ffffff",
   borderRadius: 20,
-  border: "1px solid #e2ede9",
+  border: "1px solid #ede2e7",
   padding: "26px 28px",
-  boxShadow: "0 12px 30px rgba(15, 118, 110, 0.08)",
+  boxShadow: "0 12px 30px rgba(190,24,93, 0.08)",
 };
 
 const panelTitleStyle: CSSProperties = {
@@ -615,14 +615,14 @@ const loginRowStyle: CSSProperties = {
   color: "#0f172a",
   padding: "10px 14px",
   borderRadius: 12,
-  background: "#f4fbf9",
+  background: "#fdf2f6",
 };
 
 const loginDotStyle: CSSProperties = {
   width: 8,
   height: 8,
   borderRadius: "50%",
-  background: "#0f766e",
+  background: "#be185d",
   flexShrink: 0,
 };
 

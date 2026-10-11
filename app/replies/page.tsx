@@ -1720,7 +1720,7 @@ export default function RepliesPage() {
     <>
       <style jsx global>{`
         input::placeholder {
-          color: rgba(236, 254, 255, 0.72);
+          color: rgba(255,241,242, 0.72);
         }
       `}</style>
 
@@ -2192,8 +2192,8 @@ export default function RepliesPage() {
                             disabled={pinningId === item.id}
                             style={{
                               ...menuItemStyle,
-                              color: "#0d9488",
-                              background: "rgba(13,148,136,0.08)",
+                              color: "#db2777",
+                              background: "rgba(219,39,119,0.08)",
                               opacity: pinningId === item.id ? 0.6 : 1,
                             }}
                           >
@@ -2211,8 +2211,8 @@ export default function RepliesPage() {
                               disabled={blockingId === item.id}
                               style={{
                                 ...menuItemStyle,
-                                color: "#0d9488",
-                                background: "rgba(13,148,136,0.08)",
+                                color: "#db2777",
+                                background: "rgba(219,39,119,0.08)",
                                 opacity: blockingId === item.id ? 0.6 : 1,
                               }}
                             >
@@ -2335,7 +2335,7 @@ function StatCard({
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
   padding: 24,
 };
@@ -2351,8 +2351,8 @@ const heroStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: 32,
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
 };
 
 const heroOverlayStyle: CSSProperties = {
@@ -2386,7 +2386,7 @@ const mobileBrandTitleStyle: CSSProperties = {
 
 const mobileBrandSubStyle: CSSProperties = {
   marginTop: 2,
-  color: "rgba(236,254,255,0.8)",
+  color: "rgba(255,241,242,0.8)",
   fontSize: 13.5,
   fontWeight: 600,
 };
@@ -2421,7 +2421,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "8px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 12,
   fontWeight: 800,
   letterSpacing: 0.3,
@@ -2438,7 +2438,7 @@ const heroTitleStyle: CSSProperties = {
 const heroTextStyle: CSSProperties = {
   margin: "10px 0 0 0",
   maxWidth: 760,
-  color: "rgba(236,254,255,0.86)",
+  color: "rgba(255,241,242,0.86)",
   fontSize: 16,
   lineHeight: 1.65,
 };
@@ -2459,7 +2459,7 @@ const filterTabsStyle: CSSProperties = {
 const filterTabStyle: CSSProperties = {
   border: "1px solid rgba(255,255,255,0.22)",
   background: "rgba(255,255,255,0.10)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   borderRadius: 999,
   padding: "10px 16px",
   fontSize: 14,
@@ -2474,8 +2474,8 @@ const filterTabStyle: CSSProperties = {
 };
 
 const activeFilterTabStyle: CSSProperties = {
-  background: "#ecfeff",
-  color: "#0f766e",
+  background: "#fff1f2",
+  color: "#be185d",
 };
 
 const searchWrapStyle: CSSProperties = {
@@ -2504,8 +2504,8 @@ const backButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "15px 20px",
-  background: "#ecfeff",
-  color: "#0f766e",
+  background: "#fff1f2",
+  color: "#be185d",
   fontWeight: 900,
   fontSize: 15,
   textDecoration: "none",
@@ -2612,14 +2612,14 @@ const mobileStatNumberStyle: CSSProperties = {
 };
 
 const mobileStatLabelStyle: CSSProperties = {
-  color: "rgba(236,254,255,0.8)",
+  color: "rgba(255,241,242,0.8)",
   fontSize: 14,
   fontWeight: 600,
 };
 
 const mobileStatHintStyle: CSSProperties = {
   marginTop: 2,
-  color: "rgba(236, 254, 255, 0.65)",
+  color: "rgba(255,241,242, 0.65)",
   fontSize: 11.5,
   fontWeight: 600,
 };
@@ -2633,7 +2633,7 @@ const statCardStyle: CSSProperties = {
 };
 
 const statLabelStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.72)",
+  color: "rgba(255,241,242, 0.72)",
   fontSize: 13,
   fontWeight: 600,
 };
@@ -2649,7 +2649,7 @@ const statValueStyle: CSSProperties = {
 
 const statHintStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236, 254, 255, 0.65)",
+  color: "rgba(255,241,242, 0.65)",
   fontSize: 11.5,
   fontWeight: 600,
 };
@@ -2745,7 +2745,7 @@ const conversationShellStyle: CSSProperties = {
 const conversationCardStyle: CSSProperties = {
   textDecoration: "none",
   color: "#0f172a",
-  background: "linear-gradient(180deg, #ffffff 0%, #fcfffe 100%)",
+  background: "linear-gradient(180deg, #ffffff 0%, #fffcfd 100%)",
   border: "1px solid rgba(15, 23, 42, 0.06)",
   borderRadius: 22,
   padding: 20,
@@ -2833,7 +2833,7 @@ const attentionMarkStyle: CSSProperties = {
 
 const nameStyle: CSSProperties = {
   marginTop: 6,
-  color: "#0d9488",
+  color: "#db2777",
   fontSize: 14,
   fontWeight: 700,
 };
@@ -2916,13 +2916,13 @@ const openRowStyle: CSSProperties = {
 };
 
 const openTextStyle: CSSProperties = {
-  color: "#0d9488",
+  color: "#db2777",
   fontWeight: 800,
   fontSize: 14,
 };
 
 const openArrowStyle: CSSProperties = {
-  color: "#0d9488",
+  color: "#db2777",
   fontSize: 22,
   fontWeight: 900,
 };
@@ -2981,6 +2981,6 @@ const listLoadingDotStyle: CSSProperties = {
   width: 10,
   height: 10,
   borderRadius: "50%",
-  background: "#14b8a6",
+  background: "#ec4899",
   flexShrink: 0,
 };

@@ -210,7 +210,7 @@ export default function BroadcastPage() {
 
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
-  background: "#f4fbf9",
+  background: "#fdf2f6",
   paddingBottom: 60,
 };
 
@@ -218,8 +218,8 @@ const heroStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: "0 0 32px 32px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
   padding: "40px 48px",
 };
 
@@ -239,7 +239,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "8px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 12,
   fontWeight: 800,
   letterSpacing: 0.4,
@@ -255,14 +255,14 @@ const heroTitleStyle: CSSProperties = {
 const heroSubStyle: CSSProperties = {
   margin: "8px 0 0 0",
   fontSize: 15,
-  color: "rgba(236, 254, 255, 0.8)",
+  color: "rgba(255,241,242, 0.8)",
   maxWidth: 460,
 };
 
 const backLinkStyle: CSSProperties = {
   border: "1px solid rgba(255,255,255,0.28)",
   background: "rgba(255,255,255,0.08)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   borderRadius: 999,
   padding: "10px 18px",
   fontSize: 13.5,
@@ -282,14 +282,14 @@ const contentStyle: CSSProperties = {
 const composeCardStyle: CSSProperties = {
   background: "#ffffff",
   borderRadius: 20,
-  border: "1px solid #e2ede9",
+  border: "1px solid #ede2e7",
   padding: "22px 24px",
-  boxShadow: "0 12px 30px rgba(15, 118, 110, 0.06)",
+  boxShadow: "0 12px 30px rgba(190,24,93, 0.06)",
 };
 
 const textareaStyle: CSSProperties = {
   width: "100%",
-  border: "1px solid #dbe7e3",
+  border: "1px solid #e7dbdf",
   borderRadius: 14,
   padding: "14px 16px",
   fontSize: 14.5,
@@ -316,7 +316,7 @@ const sendButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 999,
   padding: "11px 22px",
-  background: "#0d9488",
+  background: "#db2777",
   color: "#ffffff",
   fontSize: 14,
   fontWeight: 700,
@@ -324,7 +324,7 @@ const sendButtonStyle: CSSProperties = {
 };
 
 const sendButtonDisabledStyle: CSSProperties = {
-  background: "#a7d3cd",
+  background: "#d3a7b6",
   cursor: "not-allowed",
 };
 
@@ -344,9 +344,9 @@ const successTextStyle: CSSProperties = {
 const historyCardStyle: CSSProperties = {
   background: "#ffffff",
   borderRadius: 20,
-  border: "1px solid #e2ede9",
+  border: "1px solid #ede2e7",
   padding: "22px 24px",
-  boxShadow: "0 12px 30px rgba(15, 118, 110, 0.06)",
+  boxShadow: "0 12px 30px rgba(190,24,93, 0.06)",
 };
 
 const historyTitleStyle: CSSProperties = {
@@ -364,7 +364,7 @@ const historyListStyle: CSSProperties = {
 
 const historyRowStyle: CSSProperties = {
   paddingBottom: 14,
-  borderBottom: "1px solid #eef2f1",
+  borderBottom: "1px solid #f2eef0",
 };
 
 const historyMessageStyle: CSSProperties = {

@@ -1249,7 +1249,7 @@ export default function DashboardPage() {
                   ? "#34d399"
                   : toastType === "error"
                   ? "#f87171"
-                  : "#22d3ee",
+                  : "#fb7185",
             }}
           />
           <div style={{ flex: 1 }}>
@@ -1571,10 +1571,10 @@ export default function DashboardPage() {
                             style={{
                               ...fileCardStyle,
                               border: selected
-                                ? "1px solid rgba(13, 148, 136, 0.45)"
+                                ? "1px solid rgba(219,39,119, 0.45)"
                                 : "1px solid rgba(15, 23, 42, 0.06)",
                               boxShadow: selected
-                                ? "0 18px 40px rgba(13, 148, 136, 0.14)"
+                                ? "0 18px 40px rgba(219,39,119, 0.14)"
                                 : "0 8px 20px rgba(15, 23, 42, 0.05)",
                             }}
                           >
@@ -2071,8 +2071,8 @@ function GlobalStyles() {
           background: rgba(255, 255, 255, 0.1);
         }
         50% {
-          box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.35), 0 18px 40px rgba(20, 184, 166, 0.35);
-          background: rgba(45, 212, 191, 0.22);
+          box-shadow: 0 0 0 4px rgba(244,114,182, 0.35), 0 18px 40px rgba(236,72,153, 0.35);
+          background: rgba(244,114,182, 0.22);
         }
       }
 
@@ -2108,7 +2108,7 @@ function StatCard({
     >
       <div
         style={{
-          color: "rgba(236, 254, 255, 0.72)",
+          color: "rgba(255,241,242, 0.72)",
           fontSize: 15,
           fontWeight: 600,
         }}
@@ -2172,7 +2172,7 @@ function GuideItem({ number, text }: { number: string; text: string }) {
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
 };
 
@@ -2184,7 +2184,7 @@ const pageShellStyle: CSSProperties = {
 };
 
 const sidebarStyle: CSSProperties = {
-  background: "linear-gradient(180deg, #0f766e 0%, #0b5f59 100%)",
+  background: "linear-gradient(180deg, #be185d 0%, #9d174d 100%)",
   padding: 24,
   display: "flex",
   flexDirection: "column",
@@ -2224,7 +2224,7 @@ const brandTitleStyle: CSSProperties = {
 
 const brandSubStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236, 254, 255, 0.7)",
+  color: "rgba(255,241,242, 0.7)",
   fontSize: 15,
 };
 
@@ -2245,15 +2245,15 @@ const avatarStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 800,
   fontSize: 18,
   flexShrink: 0,
 };
 
 const sidebarSmallLabelStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.68)",
+  color: "rgba(255,241,242, 0.68)",
   fontSize: 13,
 };
 
@@ -2292,8 +2292,8 @@ const twilioNumberIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 22,
   fontWeight: 900,
   flexShrink: 0,
@@ -2320,7 +2320,7 @@ const twilioNumberCopyButtonStyle: CSSProperties = {
 };
 
 const twilioNumberHintStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.7)",
+  color: "rgba(255,241,242, 0.7)",
   fontSize: 14,
   lineHeight: 1.5,
 };
@@ -2359,8 +2359,8 @@ const sidebarRepliesIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 26,
   fontWeight: 900,
   flexShrink: 0,
@@ -2372,8 +2372,8 @@ const sidebarSupportIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 24,
   fontWeight: 900,
   flexShrink: 0,
@@ -2388,7 +2388,7 @@ const sidebarRepliesTitleStyle: CSSProperties = {
 
 const sidebarRepliesTextStyle: CSSProperties = {
   marginTop: 6,
-  color: "rgba(236, 254, 255, 0.95)",
+  color: "rgba(255,241,242, 0.95)",
   fontSize: 15,
   lineHeight: 1.4,
 };
@@ -2431,8 +2431,8 @@ const heroCardStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: 32,
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
 };
 
 const heroOverlayStyle: CSSProperties = {
@@ -2459,7 +2459,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "8px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 13,
   fontWeight: 800,
   letterSpacing: 0.3,
@@ -2476,7 +2476,7 @@ const heroTitleStyle: CSSProperties = {
 const heroTextStyle: CSSProperties = {
   margin: "10px 0 0 0",
   maxWidth: 760,
-  color: "rgba(236,254,255,0.86)",
+  color: "rgba(255,241,242,0.86)",
   fontSize: 18,
   lineHeight: 1.65,
 };
@@ -2514,8 +2514,8 @@ const heroPrimaryButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "15px 20px",
-  background: "#ecfeff",
-  color: "#0f766e",
+  background: "#fff1f2",
+  color: "#be185d",
   fontWeight: 900,
   fontSize: 17,
 };
@@ -2552,8 +2552,8 @@ const panelStyle: CSSProperties = {
 };
 
 const rightMiniPanelStyle: CSSProperties = {
-  background: "linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)",
-  border: "1px solid rgba(13,148,136,0.10)",
+  background: "linear-gradient(180deg, #ffffff 0%, #fdf2f8 100%)",
+  border: "1px solid rgba(219,39,119,0.10)",
   borderRadius: 28,
   padding: 22,
   boxShadow: "0 16px 40px rgba(15,23,42,0.05)",
@@ -2595,7 +2595,7 @@ const primaryButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 14,
   padding: "12px 16px",
-  background: "#0d9488",
+  background: "#db2777",
   color: "#ffffff",
   fontWeight: 800,
   cursor: "pointer",
@@ -2624,7 +2624,7 @@ const dangerButtonStyle: CSSProperties = {
 const fileCardStyle: CSSProperties = {
   borderRadius: 22,
   padding: 18,
-  background: "linear-gradient(180deg, #ffffff 0%, #fcfffe 100%)",
+  background: "linear-gradient(180deg, #ffffff 0%, #fffcfd 100%)",
 };
 
 const fileCardTopStyle: CSSProperties = {
@@ -2776,8 +2776,8 @@ const manageTemplatesLinkStyle: CSSProperties = {
   borderRadius: 16,
   border: "1px solid #dbe3ed",
   padding: "14px 16px",
-  background: "#f0fdfa",
-  color: "#0f766e",
+  background: "#fdf2f8",
+  color: "#be185d",
   fontWeight: 800,
   fontSize: 16,
   textDecoration: "none",
@@ -2857,11 +2857,11 @@ const sendButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "16px 18px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
   color: "#ffffff",
   fontWeight: 900,
   fontSize: 18,
-  boxShadow: "0 18px 35px rgba(13,148,136,0.24)",
+  boxShadow: "0 18px 35px rgba(219,39,119,0.24)",
 };
 
 const sendHelpTextStyle: CSSProperties = {
@@ -2873,8 +2873,8 @@ const sendHelpTextStyle: CSSProperties = {
 
 const sendProgressCardStyle: CSSProperties = {
   borderRadius: 14,
-  border: "1px solid #cdeee7",
-  background: "#f0fbf8",
+  border: "1px solid #eecdd8",
+  background: "#fbf0f5",
   padding: "14px 16px",
   display: "grid",
   gap: 10,
@@ -2890,7 +2890,7 @@ const sendProgressTopRowStyle: CSSProperties = {
 const sendProgressTitleStyle: CSSProperties = {
   fontSize: 15,
   fontWeight: 800,
-  color: "#0f766e",
+  color: "#be185d",
 };
 
 const sendProgressCountStyle: CSSProperties = {
@@ -2903,14 +2903,14 @@ const sendProgressCountStyle: CSSProperties = {
 const sendProgressTrackStyle: CSSProperties = {
   height: 8,
   borderRadius: 999,
-  background: "#d7ede8",
+  background: "#edd7de",
   overflow: "hidden",
 };
 
 const sendProgressFillStyle: CSSProperties = {
   height: "100%",
   borderRadius: 999,
-  background: "linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)",
+  background: "linear-gradient(90deg, #be185d 0%, #ec4899 100%)",
   transition: "width 0.3s ease",
 };
 
@@ -2924,7 +2924,7 @@ const sendOverlayBackdropStyle: CSSProperties = {
   position: "fixed",
   inset: 0,
   zIndex: 9999,
-  background: "rgba(4, 20, 18, 0.72)",
+  background: "rgba(20,4,9, 0.72)",
   backdropFilter: "blur(3px)",
   display: "flex",
   alignItems: "center",
@@ -2947,8 +2947,8 @@ const sendOverlaySpinnerStyle: CSSProperties = {
   height: 40,
   margin: "0 auto",
   borderRadius: "50%",
-  border: "4px solid rgba(15,118,110,0.15)",
-  borderTop: "4px solid #0f766e",
+  border: "4px solid rgba(190,24,93,0.15)",
+  borderTop: "4px solid #be185d",
   animation: "spin 1s linear infinite",
 };
 
@@ -2963,7 +2963,7 @@ const sendOverlaySubtitleStyle: CSSProperties = {
   marginTop: 6,
   fontSize: 16,
   fontWeight: 700,
-  color: "#0f766e",
+  color: "#be185d",
   fontFamily: "'IBM Plex Mono', monospace",
 };
 
@@ -2971,14 +2971,14 @@ const sendOverlayTrackStyle: CSSProperties = {
   marginTop: 18,
   height: 10,
   borderRadius: 999,
-  background: "#e5f3f0",
+  background: "#f3e5ea",
   overflow: "hidden",
 };
 
 const sendOverlayFillStyle: CSSProperties = {
   height: "100%",
   borderRadius: 999,
-  background: "linear-gradient(90deg, #0f766e 0%, #14b8a6 100%)",
+  background: "linear-gradient(90deg, #be185d 0%, #ec4899 100%)",
   transition: "width 0.3s ease",
 };
 
@@ -3017,8 +3017,8 @@ const guideNumberStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 900,
   fontSize: 16,
   flexShrink: 0,
@@ -3093,7 +3093,7 @@ const busySpinnerRingStyle: CSSProperties = {
   margin: "0 auto 20px auto",
   borderRadius: "50%",
   border: "8px solid rgba(255,255,255,0.12)",
-  borderTop: "8px solid #2dd4bf",
+  borderTop: "8px solid #f472b6",
   animation: "spin 1s linear infinite",
   display: "grid",
   placeItems: "center",
@@ -3103,7 +3103,7 @@ const busySpinnerInnerStyle: CSSProperties = {
   width: 24,
   height: 24,
   borderRadius: "50%",
-  background: "#2dd4bf",
+  background: "#f472b6",
   animation: "pulseScale 1.2s ease-in-out infinite",
 };
 
@@ -3139,7 +3139,7 @@ const toastStyle: CSSProperties = {
 };
 
 const toastSuccessStyle: CSSProperties = {
-  background: "linear-gradient(135deg, #052e2b 0%, #065f46 100%)",
+  background: "linear-gradient(135deg, #500724 0%, #065f46 100%)",
   color: "#ffffff",
 };
 
@@ -3226,9 +3226,9 @@ const singleSendButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "16px 18px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
   color: "#ffffff",
   fontWeight: 900,
   fontSize: 17,
-  boxShadow: "0 18px 35px rgba(13,148,136,0.20)",
+  boxShadow: "0 18px 35px rgba(219,39,119,0.20)",
 };

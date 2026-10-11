@@ -411,7 +411,7 @@ export default function StatsPage() {
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
 };
 
@@ -423,7 +423,7 @@ const pageShellStyle: CSSProperties = {
 };
 
 const sidebarStyle: CSSProperties = {
-  background: "linear-gradient(180deg, #0f766e 0%, #0b5f59 100%)",
+  background: "linear-gradient(180deg, #be185d 0%, #9d174d 100%)",
   padding: 24,
   display: "flex",
   flexDirection: "column",
@@ -463,7 +463,7 @@ const brandTitleStyle: CSSProperties = {
 
 const brandSubStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236, 254, 255, 0.7)",
+  color: "rgba(255,241,242, 0.7)",
   fontSize: 15,
 };
 
@@ -484,15 +484,15 @@ const avatarStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 800,
   fontSize: 18,
   flexShrink: 0,
 };
 
 const sidebarSmallLabelStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.68)",
+  color: "rgba(255,241,242, 0.68)",
   fontSize: 13,
 };
 
@@ -544,8 +544,8 @@ const sidebarRepliesIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 24,
   fontWeight: 900,
   flexShrink: 0,
@@ -560,7 +560,7 @@ const sidebarRepliesTitleStyle: CSSProperties = {
 
 const sidebarRepliesTextStyle: CSSProperties = {
   marginTop: 6,
-  color: "rgba(236, 254, 255, 0.95)",
+  color: "rgba(255,241,242, 0.95)",
   fontSize: 15,
   lineHeight: 1.4,
 };
@@ -586,8 +586,8 @@ const heroCardStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: 32,
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
   // Sized to its content, not a fixed viewport fraction - the 50vh version
   // left a huge slab of empty green above the actual title/controls, which
   // read as wasted space rather than a "bigger" header.
@@ -623,7 +623,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "5px 11px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 12,
   fontWeight: 800,
   letterSpacing: 0.3,
@@ -640,7 +640,7 @@ const heroTitleStyle: CSSProperties = {
 const heroTextStyle: CSSProperties = {
   margin: "5px 0 0 0",
   maxWidth: 760,
-  color: "rgba(236,254,255,0.92)",
+  color: "rgba(255,241,242,0.92)",
   fontSize: 15,
   lineHeight: 1.5,
 };
@@ -668,8 +668,8 @@ const heroPrimaryButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 12,
   padding: "8px 14px",
-  background: "#ecfeff",
-  color: "#0f766e",
+  background: "#fff1f2",
+  color: "#be185d",
   fontWeight: 900,
   fontSize: 15,
   cursor: "pointer",
@@ -743,14 +743,14 @@ const barTrackStyle: CSSProperties = {
   width: "100%",
   display: "flex",
   alignItems: "flex-end",
-  background: "#f4fbf9",
+  background: "#fdf2f6",
   borderRadius: 8,
   overflow: "hidden",
 };
 
 const barFillStyle: CSSProperties = {
   width: "100%",
-  background: "linear-gradient(180deg, #14b8a6 0%, #0f766e 100%)",
+  background: "linear-gradient(180deg, #ec4899 0%, #be185d 100%)",
   borderRadius: 8,
   transition: "height 0.8s ease-out",
 };
@@ -815,6 +815,6 @@ const spinnerStyle: CSSProperties = {
   height: 22,
   borderRadius: "50%",
   border: "3px solid rgba(15, 23, 42, 0.15)",
-  borderTop: "3px solid #0d9488",
+  borderTop: "3px solid #db2777",
   animation: "spin 1s linear infinite",
 };

@@ -279,7 +279,7 @@ export default function TemplatesPage() {
                   ? "#34d399"
                   : toastType === "error"
                   ? "#f87171"
-                  : "#22d3ee",
+                  : "#fb7185",
             }}
           />
           <div style={{ flex: 1 }}>
@@ -431,7 +431,7 @@ export default function TemplatesPage() {
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
 };
 
@@ -443,7 +443,7 @@ const pageShellStyle: CSSProperties = {
 };
 
 const sidebarStyle: CSSProperties = {
-  background: "linear-gradient(180deg, #0f766e 0%, #0b5f59 100%)",
+  background: "linear-gradient(180deg, #be185d 0%, #9d174d 100%)",
   padding: 24,
   display: "flex",
   flexDirection: "column",
@@ -481,7 +481,7 @@ const brandTitleStyle: CSSProperties = {
 
 const brandSubStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236, 254, 255, 0.7)",
+  color: "rgba(255,241,242, 0.7)",
   fontSize: 15,
 };
 
@@ -502,15 +502,15 @@ const avatarStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 800,
   fontSize: 18,
   flexShrink: 0,
 };
 
 const sidebarSmallLabelStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.68)",
+  color: "rgba(255,241,242, 0.68)",
   fontSize: 13,
 };
 
@@ -543,8 +543,8 @@ const sidebarIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 20,
   fontWeight: 900,
   flexShrink: 0,
@@ -559,7 +559,7 @@ const sidebarCardTitleStyle: CSSProperties = {
 
 const sidebarCardTextStyle: CSSProperties = {
   marginTop: 6,
-  color: "rgba(236, 254, 255, 0.95)",
+  color: "rgba(255,241,242, 0.95)",
   fontSize: 13,
   lineHeight: 1.4,
 };
@@ -583,8 +583,8 @@ const contentStyle: CSSProperties = {
 
 const heroCardStyle: CSSProperties = {
   borderRadius: 32,
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
 };
 
 const heroInnerStyle: CSSProperties = {
@@ -599,7 +599,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "8px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 13,
   fontWeight: 800,
 };
@@ -615,7 +615,7 @@ const heroTitleStyle: CSSProperties = {
 const heroTextStyle: CSSProperties = {
   margin: "10px 0 0 0",
   maxWidth: 760,
-  color: "rgba(236,254,255,0.86)",
+  color: "rgba(255,241,242,0.86)",
   fontSize: 17,
   lineHeight: 1.6,
 };
@@ -664,8 +664,8 @@ const slotNumberStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 900,
   fontSize: 16,
   flexShrink: 0,
@@ -723,7 +723,7 @@ const saveButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 14,
   padding: "12px 16px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
   color: "#ffffff",
   fontWeight: 800,
   fontSize: 16,
@@ -757,7 +757,7 @@ const toastStyle: CSSProperties = {
 };
 
 const toastSuccessStyle: CSSProperties = {
-  background: "linear-gradient(135deg, #052e2b 0%, #065f46 100%)",
+  background: "linear-gradient(135deg, #500724 0%, #065f46 100%)",
   color: "#ffffff",
 };
 

@@ -40,7 +40,7 @@ const loadingPageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   display: "grid",
   placeItems: "center",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 50%, #ec4899 100%)",
 };
 
 const loadingCardStyle: CSSProperties = {
@@ -99,7 +99,7 @@ const sendBubbleStyle: CSSProperties = {
   height: 24,
   borderRadius: "50%",
   background: "#ffffff",
-  color: "#0d9488",
+  color: "#db2777",
   display: "grid",
   placeItems: "center",
   fontSize: 11,
@@ -112,7 +112,7 @@ const loadingTextStyle: CSSProperties = {
   margin: 0,
   fontSize: 18,
   fontWeight: 700,
-  color: "#e6fffb",
+  color: "#ffe6ee",
   textAlign: "center",
 };
 

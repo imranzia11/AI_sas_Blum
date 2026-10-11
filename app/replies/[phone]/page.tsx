@@ -1662,7 +1662,7 @@ export default function ReplyThreadPage({
                                   ...bubbleStatusStyle,
                                   color: inbound
                                     ? "#64748b"
-                                    : "rgba(236,254,255,0.84)",
+                                    : "rgba(255,241,242,0.84)",
                                 }}
                               >
                                 {msg.status}
@@ -1777,7 +1777,7 @@ export default function ReplyThreadPage({
                               ...bubbleTimeStyle,
                               color: inbound
                                 ? "#64748b"
-                                : "rgba(236,254,255,0.8)",
+                                : "rgba(255,241,242,0.8)",
                             }}
                           >
                             {msg.createdAtLabel}
@@ -2009,7 +2009,7 @@ const imgScreenStyle: CSSProperties = {
   // (pageStyle/heroStyle), so this reads as "the fintech app's chat view"
   // rather than a flat, generic Messages background.
   background:
-    "radial-gradient(circle at top right, rgba(20,184,166,0.10), transparent 32%), linear-gradient(180deg, #ecfeff 0%, #f1f5f9 45%, #f1f5f9 100%)",
+    "radial-gradient(circle at top right, rgba(236,72,153,0.10), transparent 32%), linear-gradient(180deg, #fff1f2 0%, #f1f5f9 45%, #f1f5f9 100%)",
   overflow: "hidden",
 };
 
@@ -2037,7 +2037,7 @@ const imgTopBarStyle: CSSProperties = {
   // view reads as the same app rather than a lighter, separate-feeling
   // screen.
   padding: "max(16px, calc(env(safe-area-inset-top) + 10px)) 14px 16px 12px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
   boxShadow: "0 4px 16px rgba(15,23,42,0.18)",
 };
 
@@ -2088,7 +2088,7 @@ const imgTitleStyle: CSSProperties = {
 const imgSubtitleStyle: CSSProperties = {
   marginTop: 1,
   fontSize: 12,
-  color: "rgba(236,254,255,0.78)",
+  color: "rgba(255,241,242,0.78)",
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
@@ -2194,7 +2194,7 @@ const imgMessageAvatarStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #ec4899 100%)",
   color: "#ffffff",
   fontSize: 10.5,
   fontWeight: 800,
@@ -2222,13 +2222,13 @@ const imgInboundBubbleStyle: CSSProperties = {
 };
 
 const imgOutboundBubbleStyle: CSSProperties = {
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 55%, #ec4899 100%)",
   color: "#ffffff",
   // A soft halo around the bubble instead of a hard shadow underneath -
   // the gentle "glow" look real chat apps use to make the sent bubble
   // feel like it belongs to the brand color, not just a colored box.
   boxShadow:
-    "0 0 0 3px rgba(13,148,136,0.10), 0 3px 10px rgba(13,148,136,0.25)",
+    "0 0 0 3px rgba(219,39,119,0.10), 0 3px 10px rgba(219,39,119,0.25)",
 };
 
 const imgFailedBubbleStyle: CSSProperties = {
@@ -2259,7 +2259,7 @@ const imgDeliveredStyle: CSSProperties = {
 const imgInputBarWrapStyle: CSSProperties = {
   flexShrink: 0,
   background: "rgba(255,255,255,0.96)",
-  borderTop: "1px solid rgba(13,148,136,0.12)",
+  borderTop: "1px solid rgba(219,39,119,0.12)",
   boxShadow: "0 -2px 12px rgba(15,23,42,0.04)",
   padding: "8px 10px max(8px, env(safe-area-inset-bottom)) 10px",
   backdropFilter: "blur(10px)",
@@ -2335,9 +2335,9 @@ const imgAttachButtonStyle: CSSProperties = {
   width: 34,
   height: 34,
   borderRadius: "50%",
-  border: "1px solid rgba(13,148,136,0.18)",
-  background: "rgba(13,148,136,0.08)",
-  color: "#0d9488",
+  border: "1px solid rgba(219,39,119,0.18)",
+  background: "rgba(219,39,119,0.08)",
+  color: "#db2777",
   fontSize: 20,
   fontWeight: 800,
   cursor: "pointer",
@@ -2367,7 +2367,7 @@ const imgSendButtonStyle: CSSProperties = {
   height: 34,
   borderRadius: "50%",
   border: "none",
-  background: "linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #ec4899 100%)",
   color: "#ffffff",
   fontSize: 16,
   fontWeight: 900,
@@ -2375,13 +2375,13 @@ const imgSendButtonStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  boxShadow: "0 2px 6px rgba(13,148,136,0.35)",
+  boxShadow: "0 2px 6px rgba(219,39,119,0.35)",
 };
 
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
   padding: 24,
 };
@@ -2397,8 +2397,8 @@ const heroStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   borderRadius: 32,
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 30px 80px rgba(13, 148, 136, 0.28)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 30px 80px rgba(219,39,119, 0.28)",
 };
 
 const heroOverlayStyle: CSSProperties = {
@@ -2425,7 +2425,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "8px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.18)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 12,
   fontWeight: 800,
   letterSpacing: 0.3,
@@ -2443,7 +2443,7 @@ const heroTitleStyle: CSSProperties = {
 const heroTextStyle: CSSProperties = {
   margin: "10px 0 0 0",
   maxWidth: 760,
-  color: "rgba(236,254,255,0.86)",
+  color: "rgba(255,241,242,0.86)",
   fontSize: 16,
   lineHeight: 1.65,
 };
@@ -2468,7 +2468,7 @@ const heroInfoChipStyle: CSSProperties = {
 };
 
 const heroInfoLabelStyle: CSSProperties = {
-  color: "rgba(236,254,255,0.7)",
+  color: "rgba(255,241,242,0.7)",
   fontSize: 13,
   fontWeight: 700,
 };
@@ -2484,8 +2484,8 @@ const backButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "15px 20px",
-  background: "#ecfeff",
-  color: "#0f766e",
+  background: "#fff1f2",
+  color: "#be185d",
   fontWeight: 900,
   fontSize: 15,
   textDecoration: "none",
@@ -2549,11 +2549,11 @@ const panelHeaderActionsStyle: CSSProperties = {
 };
 
 const pinButtonStyle: CSSProperties = {
-  border: "1px solid rgba(13,148,136,0.25)",
+  border: "1px solid rgba(219,39,119,0.25)",
   borderRadius: 14,
   padding: "12px 16px",
-  background: "rgba(13,148,136,0.08)",
-  color: "#0f766e",
+  background: "rgba(219,39,119,0.08)",
+  color: "#be185d",
   fontWeight: 800,
   cursor: "pointer",
 };
@@ -2600,8 +2600,8 @@ const inboundBubbleStyle: CSSProperties = {
 };
 
 const outboundBubbleStyle: CSSProperties = {
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
-  border: "1px solid rgba(13,148,136,0.18)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
+  border: "1px solid rgba(219,39,119,0.18)",
 };
 
 const failedBubbleStyle: CSSProperties = {
@@ -2634,7 +2634,7 @@ const inboundDirectionStyle: CSSProperties = {
 
 const outboundDirectionStyle: CSSProperties = {
   background: "rgba(255,255,255,0.14)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   border: "1px solid rgba(255,255,255,0.18)",
 };
 
@@ -2867,11 +2867,11 @@ const sendButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 18,
   padding: "16px 18px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
   color: "#ffffff",
   fontWeight: 900,
   fontSize: 16,
-  boxShadow: "0 18px 35px rgba(13,148,136,0.24)",
+  boxShadow: "0 18px 35px rgba(219,39,119,0.24)",
 };
 
 const secondaryButtonStyle: CSSProperties = {

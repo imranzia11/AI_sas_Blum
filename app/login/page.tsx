@@ -301,7 +301,7 @@ function LoginPageInner() {
                               threadStep === "outDelivered" ||
                               threadStep === "typingIn" ||
                               threadStep === "inReceived"
-                                ? "#5eead4"
+                                ? "#f9a8d4"
                                 : "rgba(255,255,255,0.55)",
                           }}
                         >
@@ -536,7 +536,7 @@ function TypingDots({ dark = false }: { dark?: boolean }) {
 
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -555,7 +555,7 @@ const shellStyle: CSSProperties = {
 
 const leftStyle: CSSProperties = {
   padding: "12px 8px",
-  color: "#ecfeff",
+  color: "#fff1f2",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -603,7 +603,7 @@ const heroBadgeStyle: CSSProperties = {
   padding: "7px 14px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.24)",
-  color: "#ecfeff",
+  color: "#fff1f2",
   fontSize: 12,
   fontWeight: 500,
   fontFamily: "'IBM Plex Mono', monospace",
@@ -633,7 +633,7 @@ const threadCardStyle: CSSProperties = {
   width: "100%",
   maxWidth: 440,
   borderRadius: 20,
-  background: "rgba(8, 30, 27, 0.28)",
+  background: "rgba(80,7,36, 0.28)",
   border: "1px solid rgba(255,255,255,0.16)",
   padding: 18,
 };
@@ -698,7 +698,7 @@ const threadBubbleStyle: CSSProperties = {
 };
 
 const threadBubbleOutStyle: CSSProperties = {
-  background: "rgba(8, 30, 27, 0.55)",
+  background: "rgba(80,7,36, 0.55)",
   border: "1px solid rgba(255,255,255,0.14)",
 };
 
@@ -742,7 +742,7 @@ const typingBubbleStyle: CSSProperties = {
 };
 
 const typingBubbleOutStyle: CSSProperties = {
-  background: "rgba(8, 30, 27, 0.4)",
+  background: "rgba(80,7,36, 0.4)",
 };
 
 const typingBubbleInStyle: CSSProperties = {
@@ -778,7 +778,7 @@ const statValueStyle: CSSProperties = {
 
 const statLabelStyle: CSSProperties = {
   fontSize: 12,
-  color: "rgba(190, 242, 232, 0.55)",
+  color: "rgba(242,190,207, 0.55)",
 };
 
 const featureGridStyle: CSSProperties = {
@@ -818,13 +818,13 @@ const qrTextStyle: CSSProperties = {
   marginTop: 4,
   fontSize: 12.5,
   lineHeight: 1.5,
-  color: "rgba(236, 254, 255, 0.75)",
+  color: "rgba(255,241,242, 0.75)",
 };
 
 const featureCardStyle: CSSProperties = {
   borderRadius: 16,
   padding: 16,
-  background: "rgba(8, 30, 27, 0.22)",
+  background: "rgba(80,7,36, 0.22)",
   border: "1px solid rgba(255,255,255,0.16)",
 };
 
@@ -858,7 +858,7 @@ const cardStyle: CSSProperties = {
   maxWidth: 460,
   borderRadius: 26,
   padding: 40,
-  background: "#f4fbf9",
+  background: "#fdf2f6",
   boxShadow: "0 30px 80px rgba(2,8,23,0.35)",
 };
 
@@ -920,7 +920,7 @@ const labelStyle: CSSProperties = {
 const inputStyle: CSSProperties = {
   width: "100%",
   borderRadius: 12,
-  border: "1px solid #d7e3e0",
+  border: "1px solid #e3d7db",
   background: "#ffffff",
   color: "#0f172a",
   padding: "16px 16px",
@@ -944,7 +944,7 @@ const passwordToggleStyle: CSSProperties = {
   transform: "translateY(-50%)",
   border: "none",
   background: "transparent",
-  color: "#0f766e",
+  color: "#be185d",
   fontSize: 12.5,
   fontWeight: 700,
   cursor: "pointer",
@@ -967,11 +967,11 @@ const buttonStyle: CSSProperties = {
   border: "none",
   borderRadius: 12,
   padding: "17px 18px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 100%)",
   color: "#ffffff",
   fontSize: 17,
   fontWeight: 700,
-  boxShadow: "0 14px 30px rgba(13,148,136,0.24)",
+  boxShadow: "0 14px 30px rgba(219,39,119,0.24)",
 };
 
 const buttonLoadingWrapStyle: CSSProperties = {

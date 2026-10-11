@@ -569,7 +569,7 @@ export default function HelpPage() {
 const pageStyle: CSSProperties = {
   minHeight: "calc(100vh / var(--ui-zoom, 1))",
   background:
-    "radial-gradient(circle at top left, rgba(20,184,166,0.18), transparent 28%), linear-gradient(180deg, #ecfeff 0%, #f8fafc 46%, #f8fafc 100%)",
+    "radial-gradient(circle at top left, rgba(236,72,153,0.18), transparent 28%), linear-gradient(180deg, #fff1f2 0%, #f8fafc 46%, #f8fafc 100%)",
   color: "#0f172a",
 };
 
@@ -581,7 +581,7 @@ const pageShellStyle: CSSProperties = {
 };
 
 const sidebarStyle: CSSProperties = {
-  background: "linear-gradient(180deg, #0f766e 0%, #0b5f59 100%)",
+  background: "linear-gradient(180deg, #be185d 0%, #9d174d 100%)",
   padding: 24,
   display: "flex",
   flexDirection: "column",
@@ -621,7 +621,7 @@ const brandTitleStyle: CSSProperties = {
 
 const brandSubStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236, 254, 255, 0.7)",
+  color: "rgba(255,241,242, 0.7)",
   fontSize: 15,
 };
 
@@ -642,15 +642,15 @@ const avatarStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontWeight: 800,
   fontSize: 18,
   flexShrink: 0,
 };
 
 const sidebarSmallLabelStyle: CSSProperties = {
-  color: "rgba(236, 254, 255, 0.68)",
+  color: "rgba(255,241,242, 0.68)",
   fontSize: 13,
 };
 
@@ -702,8 +702,8 @@ const sidebarRepliesIconStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 24,
   fontWeight: 900,
   flexShrink: 0,
@@ -718,7 +718,7 @@ const sidebarRepliesTitleStyle: CSSProperties = {
 
 const sidebarRepliesTextStyle: CSSProperties = {
   marginTop: 6,
-  color: "rgba(236, 254, 255, 0.95)",
+  color: "rgba(255,241,242, 0.95)",
   fontSize: 15,
   lineHeight: 1.4,
 };
@@ -748,8 +748,8 @@ const chatHeaderStyle: CSSProperties = {
   gap: 14,
   borderRadius: 24,
   padding: "18px 22px",
-  background: "linear-gradient(135deg, #0f766e 0%, #0d9488 48%, #14b8a6 100%)",
-  boxShadow: "0 20px 50px rgba(13, 148, 136, 0.22)",
+  background: "linear-gradient(135deg, #be185d 0%, #db2777 48%, #ec4899 100%)",
+  boxShadow: "0 20px 50px rgba(219,39,119, 0.22)",
 };
 
 const chatHeaderAvatarStyle: CSSProperties = {
@@ -771,7 +771,7 @@ const chatHeaderTitleStyle: CSSProperties = {
 
 const chatHeaderSubStyle: CSSProperties = {
   marginTop: 4,
-  color: "rgba(236,254,255,0.85)",
+  color: "rgba(255,241,242,0.85)",
   fontSize: 15,
 };
 
@@ -808,8 +808,8 @@ const chatAvatarSmallStyle: CSSProperties = {
   borderRadius: "50%",
   display: "grid",
   placeItems: "center",
-  background: "#ccfbf1",
-  color: "#115e59",
+  background: "#fce7f3",
+  color: "#9d174d",
   fontSize: 17,
   flexShrink: 0,
 };
@@ -829,7 +829,7 @@ const assistantBubbleStyle: CSSProperties = {
 };
 
 const userBubbleStyle: CSSProperties = {
-  background: "#0d9488",
+  background: "#db2777",
   color: "#ffffff",
   borderBottomRightRadius: 6,
 };
@@ -874,11 +874,11 @@ const chipRowStyle: CSSProperties = {
 };
 
 const chipStyle: CSSProperties = {
-  border: "1px solid rgba(13,148,136,0.3)",
+  border: "1px solid rgba(219,39,119,0.3)",
   borderRadius: 999,
   padding: "8px 14px",
-  background: "rgba(13,148,136,0.06)",
-  color: "#0d9488",
+  background: "rgba(219,39,119,0.06)",
+  color: "#db2777",
   fontSize: 14,
   fontWeight: 700,
   cursor: "pointer",
@@ -907,7 +907,7 @@ const chatSendButtonStyle: CSSProperties = {
   border: "none",
   borderRadius: 16,
   padding: "14px 24px",
-  background: "#0d9488",
+  background: "#db2777",
   color: "#ffffff",
   fontWeight: 800,
   fontSize: 16,
@@ -920,7 +920,7 @@ const footerSupportButtonStyle: CSSProperties = {
   borderRadius: 14,
   padding: "10px 18px",
   background: "#ffffff",
-  color: "#0d9488",
+  color: "#db2777",
   fontWeight: 800,
   fontSize: 15,
   cursor: "pointer",
