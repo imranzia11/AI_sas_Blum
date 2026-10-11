@@ -705,29 +705,16 @@ export async function POST(req: NextRequest) {
       console.error("Push notification call failed (non-fatal)", error);
     });
 
-    if (isStop) {
-      // Do NOT send our own confirmation text here. Twilio's own opt-out
-      // compliance filter blocks all further outbound messages to this
-      // number the instant it processes the STOP - including this exact
-      // reply - so this always failed with error 21610 and never once
-      // reached the customer. Twilio already sends its own automatic
-      // opt-out confirmation separately (that's the "reply START/UNSTOP to
-      // resubscribe" text customers actually receive - not this one).
-      // The actual compliance action (blocking future sends) already
-      // happened above via batch.commit(), so removing this reply changes
-      // nothing about opt-out enforcement - it just stops guaranteed-to-
-      // fail sends from cluttering the Twilio error log.
-      return xmlResponse();
-    }
-
-    if (isFreeTextOptOut) {
-      // Unlike the exact "STOP" keyword above, Twilio's own compliance
-      // filter only recognizes its fixed canonical list (STOP, STOPALL,
-      // UNSUBSCRIBE, CANCEL, END, QUIT) - a free-text phrase like "opt out"
-      // isn't on that list, so Twilio won't auto-block this confirmation
-      // the way it does for a real STOP. Sending it lets the customer know
-      // their request actually worked, since they didn't use the "magic
-      // word" Twilio itself listens for.
+    if (isStop || isFreeTextOptOut) {
+      // Unlike SMS, WhatsApp has no carrier-level auto-block on a STOP
+      // keyword - Meta leaves opt-out enforcement entirely up to the
+      // business, and Twilio does not silently swallow this reply the way
+      // it does for SMS's 21610 compliance filter. The actual compliance
+      // action (blocking future sends) already happened above via
+      // batch.commit(); this reply just confirms to the customer that
+      // their request went through. Sending it is also safe/allowed here
+      // regardless of the 24-hour template window, since it's a reply to
+      // a message the customer just sent.
       return xmlResponse(
         "You've been unsubscribed and will not receive further messages. Reply START to resubscribe."
       );

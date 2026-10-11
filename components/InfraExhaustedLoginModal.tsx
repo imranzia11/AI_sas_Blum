@@ -9,7 +9,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 // this component checks for it on mount, shows the modal if present, and
 // clears the flag immediately so it doesn't reappear on every subsequent
 // page load within the same session - only on the next actual login.
-const SHOW_FLAG_KEY = "nexgen_show_infra_notice";
+const SHOW_FLAG_KEY = "blum_show_infra_notice";
 
 export default function InfraExhaustedLoginModal() {
   const [visible, setVisible] = useState(false);

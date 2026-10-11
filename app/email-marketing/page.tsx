@@ -492,7 +492,7 @@ export default function EmailMarketingPage() {
             <div style={brandWrapStyle}>
               <div style={brandIconStyle}>N</div>
               <div>
-                <div style={brandTitleStyle}>Nexgen</div>
+                <div style={brandTitleStyle}>Blum</div>
                 <div style={brandSubStyle}>Email Campaigns</div>
               </div>
             </div>
@@ -550,14 +550,6 @@ export default function EmailMarketingPage() {
                 Stats
               </Link>
 
-              <a
-                href="https://nexgenmerchant-finder.web.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={sidebarSecondaryLinkButtonStyle}
-              >
-                Beta Version - Lead Generation
-              </a>
 
               <button onClick={handleLogout} style={sidebarLogoutButtonStyle}>
                 Logout
@@ -624,7 +616,7 @@ export default function EmailMarketingPage() {
                     type="text"
                     value={createName}
                     onChange={(e) => setCreateName(e.target.value)}
-                    placeholder="Display name (e.g. Charles @ Nexgen)"
+                    placeholder="Display name (e.g. Charles @ Blum)"
                     style={gateInputStyle}
                   />
                   <button type="submit" style={gateButtonStyle} disabled={createLoading}>

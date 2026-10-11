@@ -22,7 +22,7 @@ import { auth, db } from "@/lib/firebase";
 // superadmin a read receipt of who's acknowledged what; that would need a
 // second write path (and a rules change letting each user write their own
 // ack) and hasn't been asked for.
-const ACK_STORAGE_PREFIX = "nexgen_last_acked_announcement_";
+const ACK_STORAGE_PREFIX = "blum_last_acked_announcement_";
 
 type Announcement = {
   id: string;

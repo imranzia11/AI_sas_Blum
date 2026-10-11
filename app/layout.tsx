@@ -3,8 +3,8 @@ import "./globals.css";
 import AnnouncementModal from "../components/AnnouncementModal";
 
 export const metadata: Metadata = {
-  title: "Nexgen SMS Admin",
-  description: "Nexgen SMS admin portal",
+  title: "Blum WhatsApp Admin",
+  description: "Blum WhatsApp admin portal",
   // iOS Safari ignores most of the web manifest (app/manifest.ts) and
   // needs its own meta tags to get the same "installed app" effect -
   // full-screen, no address bar, its own icon - when added to the home
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     // top of the screen, rather than a green bar sitting under a separate
     // white status-bar strip.
     statusBarStyle: "black-translucent",
-    title: "Nexgen Replies",
+    title: "Blum Replies",
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",

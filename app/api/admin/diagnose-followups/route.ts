@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
     if (!phone) {
       return NextResponse.json(
-        { ok: false, error: "Provide a phone number, e.g. +13863060228" },
+        { ok: false, error: "Provide a phone number, e.g. +971501234567" },
         { status: 400 }
       );
     }

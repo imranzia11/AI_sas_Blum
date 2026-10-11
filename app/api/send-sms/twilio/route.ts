@@ -156,17 +156,26 @@ export async function POST(req: NextRequest) {
       fileName,
       message,
       leads,
+      contentSid,
     }: {
       campaignName?: string;
       fileId?: string;
       fileName?: string;
       message?: string;
       leads?: LeadInput[];
+      // Approved WhatsApp message Template SID (Twilio Content API,
+      // "HX..."). Required for leads being messaged for the first time -
+      // WhatsApp only allows free-form text within 24 hours of the
+      // customer's last message, so a first-touch campaign send with no
+      // template will fail per-lead with Twilio error 63016. Leads that
+      // already have an open reply window still use the plain `message`
+      // text below.
+      contentSid?: string;
     } = body;
 
-    if (!message?.trim()) {
+    if (!message?.trim() && !contentSid?.trim()) {
       return NextResponse.json(
-        { ok: false, error: "Message is required." },
+        { ok: false, error: "Message or WhatsApp template (contentSid) is required." },
         { status: 400 }
       );
     }
@@ -226,20 +235,37 @@ export async function POST(req: NextRequest) {
         );
 
         const isFirstMessage = !alreadyMessaged;
+        // message is optional when a contentSid template is supplied for
+        // first-touch sends (see the request validation above) - falls
+        // back to "" so buildPersonalizedMessage/finalMessage stay safe
+        // even though that value goes unused on the template send path.
         const finalMessage = buildPersonalizedMessage(
-          message.trim(),
+          (message || "").trim(),
           lead.name,
           isFirstMessage
         );
 
         // Routed through the shared sendSmsForUser helper so `from` is
         // always pinned to this user's own number, never picked from the
-        // shared Messaging Service pool.
-        const res = await sendSmsForUser({
-          userData,
-          to: formattedPhone,
-          body: finalMessage,
-        });
+        // shared Messaging Service pool. A lead we've never messaged
+        // before needs the approved template (contentSid) - WhatsApp
+        // rejects free-form text outside the 24-hour reply window - while
+        // a lead we've already been in conversation with can keep using
+        // plain text.
+        const res = await sendSmsForUser(
+          isFirstMessage && contentSid?.trim()
+            ? {
+                userData,
+                to: formattedPhone,
+                contentSid: contentSid.trim(),
+                contentVariables: lead.name ? { "1": formatLeadName(lead.name) } : undefined,
+              }
+            : {
+                userData,
+                to: formattedPhone,
+                body: finalMessage,
+              }
+        );
 
         const convoId = `${uid}_${phoneDocId(formattedPhone)}`;
         const convoRef = adminDb.collection("conversations").doc(convoId);

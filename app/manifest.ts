@@ -13,7 +13,7 @@ import type { MetadataRoute } from "next";
 // app" switch.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Nexgen Replies",
+    name: "Blum Replies",
     short_name: "Replies",
     description: "Check and respond to customer SMS replies",
     start_url: "/login?next=/replies",

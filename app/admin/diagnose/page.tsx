@@ -207,7 +207,7 @@ export default function DiagnoseFollowUpsPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleLookup();
             }}
-            placeholder="+13863060228"
+            placeholder="+971501234567"
             style={inputStyle}
           />
           <button

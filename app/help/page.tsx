@@ -68,7 +68,7 @@ const FAQ_ITEMS: FaqItem[] = [
       "leads file",
     ],
     answer:
-      "Upload a .csv file with a header row. The phone number column is detected automatically by name (phone, phone_number, mobile, contact, number, cell, or whatsapp) - if none of those match, the first column is used. Phone numbers should be US numbers: a plain 10-digit number, 11 digits starting with 1, or already formatted as +1XXXXXXXXXX. Add a Name / Full Name / Customer Name / First Name column if you want it available for personalization.",
+      "Upload a .csv file with a header row. The phone number column is detected automatically by name (phone, phone_number, mobile, contact, number, cell, or whatsapp) - if none of those match, the first column is used. Phone numbers should be UAE mobile numbers: a plain 9-digit number starting with 5, 10 digits starting with 05, or already formatted as +971 followed by the 9-digit mobile number. Add a Name / Full Name / Customer Name / First Name column if you want it available for personalization.",
   },
   {
     id: "invalid-numbers",
@@ -286,7 +286,7 @@ const SUPPORT_URL = "https://wa.me/971523480839";
 const FALLBACK_TEXT =
   "I don't have a confident answer for that one yet. Support can help you sort it out directly.";
 const GREETING_TEXT =
-  "Hi! I'm your Nexgen SMS help assistant. Ask me about sending limits, file format, follow-ups, opt-outs, or anything else - I'll answer instantly, and point you to support if I'm not sure.";
+  "Hi! I'm your Blum WhatsApp help assistant. Ask me about sending limits, file format, follow-ups, opt-outs, or anything else - I'll answer instantly, and point you to support if I'm not sure.";
 
 type ChatMessage = {
   id: string;
@@ -471,7 +471,7 @@ export default function HelpPage() {
             <div style={brandWrapStyle}>
               <div style={brandIconStyle}>N</div>
               <div>
-                <div style={brandTitleStyle}>Nexgen SMS</div>
+                <div style={brandTitleStyle}>Blum WhatsApp</div>
                 <div style={brandSubStyle}>User Portal</div>
               </div>
             </div>
@@ -558,14 +558,6 @@ Beta Version
                 Stats
               </Link>
 
-              <a
-                href="https://nexgenmerchant-finder.web.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={sidebarSecondaryLinkButtonStyle}
-              >
-                Beta Version - Lead Generation
-              </a>
 
               <button onClick={handleLogout} style={sidebarLogoutButtonStyle}>
                 Logout

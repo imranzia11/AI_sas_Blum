@@ -252,7 +252,7 @@ function LoginPageInner() {
             <div style={brandRowStyle}>
               <div style={brandIconStyle}>N</div>
               <div>
-                <div style={brandTitleStyle}>Nexgen Marketing</div>
+                <div style={brandTitleStyle}>Blum Marketing</div>
                 <div style={brandSubStyle}>AI Marketing Platform</div>
               </div>
             </div>
@@ -274,7 +274,7 @@ function LoginPageInner() {
             <div style={threadCardStyle}>
               <div style={threadTopBarStyle}>
                 <span style={threadTopDotStyle} />
-                <span style={threadTopLabelStyle}>+1 (914) 555-0142</span>
+                <span style={threadTopLabelStyle}>+971 50 123 4567</span>
                 <span style={threadTopStatusStyle}>live thread</span>
               </div>
 
@@ -405,7 +405,7 @@ function LoginPageInner() {
                     aria-hidden="true"
                     style={cardBrandLogoStyle}
                   />
-                  <span style={cardBrandTextStyle}>Nexgen</span>
+                  <span style={cardBrandTextStyle}>Blum</span>
                 </div>
                 <h2 style={cardTitleStyle}>Sign in</h2>
                 <p style={cardTextStyle}>

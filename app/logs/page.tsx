@@ -347,7 +347,7 @@ export default function LogsPage() {
             <div style={brandWrapStyle}>
               <div style={brandIconStyle}>N</div>
               <div>
-                <div style={brandTitleStyle}>Nexgen SMS</div>
+                <div style={brandTitleStyle}>Blum WhatsApp</div>
                 <div style={brandSubStyle}>User Portal</div>
               </div>
             </div>
@@ -438,14 +438,6 @@ Beta Version
                 Stats
               </Link>
 
-              <a
-                href="https://nexgenmerchant-finder.web.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={sidebarSecondaryLinkButtonStyle}
-              >
-                Beta Version - Lead Generation
-              </a>
 
               <button onClick={handleLogout} style={sidebarLogoutButtonStyle}>
                 Logout

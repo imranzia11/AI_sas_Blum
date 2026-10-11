@@ -431,18 +431,18 @@ function isPhoneLikeSearch(term: string): boolean {
 }
 
 // Builds the lower end of a Firestore range query anchored to how `phone`
-// is actually stored (see tools/audit-conversation-phone-format.ts - a
-// live audit confirmed 99.96% of conversations are exactly "+1" followed
-// by a 10-digit US number). NANP area codes never start with 0 or 1, so a
-// typed digit string that starts with "1" is virtually always the start
-// of the country code being typed (e.g. "19122...") rather than the start
-// of a local number - and one that doesn't start with "1" is the start of
-// a bare local number, which is stored with "+1" prepended. Either way,
-// this reconstructs the same "+1XXXXXXXXXX" shape the data is actually in.
+// is actually stored - every conversation's phone is a UAE mobile number
+// in "+971" + 9-digit-subscriber-number form (e.g. "+971501234567"). If
+// the typed digits already start with the "971" country code, use them
+// as-is; otherwise treat them as a local number (optionally with the "0"
+// trunk prefix UAE numbers are locally written with, e.g. "0501234567")
+// and prepend "971", reconstructing the same "+971XXXXXXXXX" shape the
+// data is actually stored in.
 function buildPhoneSearchAnchor(term: string): string {
   const digits = term.replace(/\D/g, "");
-  const withCountryCode = digits.startsWith("1") ? digits : `1${digits}`;
-  return `+${withCountryCode}`;
+  if (digits.startsWith("971")) return `+${digits}`;
+  const withoutTrunkZero = digits.startsWith("0") ? digits.slice(1) : digits;
+  return `+971${withoutTrunkZero}`;
 }
 
 // Anchor for the `phoneReversed` prefix query (see reversePhone() in
@@ -2104,7 +2104,7 @@ export default function RepliesPage() {
                   <div style={mobileBrandRowStyle}>
                     <img src="/logo-mark.png" alt="" aria-hidden="true" style={mobileBrandLogoStyle} />
                     <div>
-                      <div style={mobileBrandTitleStyle}>Nexgen Replies</div>
+                      <div style={mobileBrandTitleStyle}>Blum Replies</div>
                       <div style={mobileBrandSubStyle}>
                         {filterModeLabel(filterMode)}
                       </div>

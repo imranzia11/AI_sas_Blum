@@ -159,58 +159,62 @@ const FOLLOW_UP_HOUR_OPTIONS = [4, 6, 8, 12, 24];
 // network/Twilio conditions, with real headroom to spare.
 const SEND_CHUNK_SIZE = 150;
 
-function getUSPhoneValidation(raw: string) {
+function getUAEPhoneValidation(raw: string) {
   const original = String(raw || "").trim();
 
   if (!original) {
     return {
       valid: false,
       normalized: "",
-      reason: "Format does not match US +1XXXXXXXXXX",
+      reason: "Format does not match UAE +971 5XXXXXXXX",
     };
   }
 
   const digits = original.replace(/\D/g, "");
 
-  if (original.startsWith("+1")) {
-    if (digits.length === 11 && digits.startsWith("1")) {
+  // UAE mobile numbers: +971 followed by a 9-digit subscriber number that
+  // starts with 5 (e.g. +971501234567). Landlines aren't valid WhatsApp
+  // senders, so only the mobile prefix is accepted here.
+  if (original.startsWith("+971") || original.startsWith("971")) {
+    if (digits.length === 12 && digits.startsWith("9715")) {
       return {
         valid: true,
         normalized: `+${digits}`,
-        reason: "Valid US number",
+        reason: "Valid UAE number",
       };
     }
 
     return {
       valid: false,
       normalized: "",
-      reason: "Format does not match US +1XXXXXXXXXX",
+      reason: "Format does not match UAE +971 5XXXXXXXX",
     };
   }
 
-  if (digits.length === 10) {
+  // Local format: 05XXXXXXXX (10 digits, leading 0 + mobile prefix 5).
+  if (digits.length === 10 && digits.startsWith("05")) {
     return {
       valid: true,
-      normalized: `+1${digits}`,
-      reason: "Valid US number",
+      normalized: `+971${digits.slice(1)}`,
+      reason: "Valid UAE number",
     };
   }
 
-  if (digits.length === 11 && digits.startsWith("1")) {
+  // Bare subscriber number: 5XXXXXXXX (9 digits, no leading 0 or country code).
+  if (digits.length === 9 && digits.startsWith("5")) {
     return {
       valid: true,
-      normalized: `+1${digits.slice(1)}`,
-      reason: "Valid US number",
+      normalized: `+971${digits}`,
+      reason: "Valid UAE number",
     };
   }
 
   return {
     valid: false,
     normalized: "",
-    reason: "Format does not match US +1XXXXXXXXXX",
+    reason: "Format does not match UAE +971 5XXXXXXXX",
   };
 }
-
 function guessPhoneColumn(headers: string[]) {
   const priorities = [
     "phone",
@@ -809,7 +813,7 @@ export default function DashboardPage() {
 
           const phoneColumn = guessPhoneColumn(detectedHeaders);
           const validPhoneRows = parsedRows.filter((row) => {
-            const validation = getUSPhoneValidation(row[phoneColumn] || "");
+            const validation = getUAEPhoneValidation(row[phoneColumn] || "");
             return validation.valid;
           }).length;
 
@@ -829,7 +833,7 @@ export default function DashboardPage() {
 
           for (const row of parsedRows) {
             const rawPhone = String(row[phoneColumn] || "");
-            const validation = getUSPhoneValidation(rawPhone);
+            const validation = getUAEPhoneValidation(rawPhone);
             const detectedName = String(guessNameFromRow(row) || "").trim();
 
             await addDoc(collection(db, "leads"), {
@@ -841,7 +845,7 @@ export default function DashboardPage() {
               rawPhone,
               status: validation.valid ? "verified" : "unverified",
               validationNote: validation.valid
-                ? "Valid US number"
+                ? "Valid UAE number"
                 : validation.reason,
               sourceFileName: file.name,
               createdAt: serverTimestamp(),
@@ -1267,7 +1271,7 @@ export default function DashboardPage() {
       return;
     }
 
-    const validation = getUSPhoneValidation(singlePhoneNumber);
+    const validation = getUAEPhoneValidation(singlePhoneNumber);
 
     if (!validation.valid) {
       showToast("Please enter one valid US phone number.", "error");
@@ -1534,7 +1538,7 @@ export default function DashboardPage() {
 
             <p style={busyTextStyle}>
               {uploading
-                ? "The system is reading your CSV, validating US numbers, and saving leads."
+                ? "The system is reading your CSV, validating UAE numbers, and saving leads."
                 : sendingSms
                 ? "The system is processing verified recipients and sending messages. Please do not close this page."
                 : sendingSingleSms
@@ -1552,7 +1556,7 @@ export default function DashboardPage() {
               <div style={brandWrapStyle}>
                 <div style={brandIconStyle}>N</div>
                 <div>
-                  <div style={brandTitleStyle}>Nexgen SMS</div>
+                  <div style={brandTitleStyle}>Blum WhatsApp</div>
                   <div style={brandSubStyle}>Admin Portal</div>
                 </div>
               </div>
@@ -1718,14 +1722,6 @@ Beta Version
                   Stats
                 </Link>
 
-                <a
-                  href="https://nexgenmerchant-finder.web.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={sidebarSecondaryLinkButtonStyle}
-                >
-                  Beta Version - Lead Generation
-                </a>
 
                 <button onClick={handleLogout} style={sidebarLogoutButtonStyle}>
                   Logout
@@ -2304,19 +2300,19 @@ Beta Version
 
                   <section style={singleSendCardStyle}>
                     <div>
-                      <h3 style={singleSendTitleStyle}>Send to one USA number</h3>
+                      <h3 style={singleSendTitleStyle}>Send to one UAE number</h3>
                       <p style={singleSendTextStyle}>
-                        Add one valid US phone number and send this message
+                        Add one valid UAE phone number and send this message
                         directly.
                       </p>
                     </div>
 
                     <div style={{ marginTop: 18 }}>
-                      <label style={fieldLabelStyle}>US Phone Number</label>
+                      <label style={fieldLabelStyle}>UAE Phone Number</label>
                       <input
                         value={singlePhoneNumber}
                         onChange={(e) => setSinglePhoneNumber(e.target.value)}
-                        placeholder="Example: +16625551234"
+                        placeholder="Example: +971501234567"
                         style={singleSendInputStyle}
                       />
                     </div>
@@ -2328,7 +2324,7 @@ Beta Version
                           sendingSingleSms ||
                           uploading ||
                           !message.trim() ||
-                          !getUSPhoneValidation(singlePhoneNumber).valid
+                          !getUAEPhoneValidation(singlePhoneNumber).valid
                         }
                         style={{
                           ...singleSendButtonStyle,
@@ -2336,14 +2332,14 @@ Beta Version
                             sendingSingleSms ||
                             uploading ||
                             !message.trim() ||
-                            !getUSPhoneValidation(singlePhoneNumber).valid
+                            !getUAEPhoneValidation(singlePhoneNumber).valid
                               ? 0.55
                               : 1,
                           cursor:
                             sendingSingleSms ||
                             uploading ||
                             !message.trim() ||
-                            !getUSPhoneValidation(singlePhoneNumber).valid
+                            !getUAEPhoneValidation(singlePhoneNumber).valid
                               ? "not-allowed"
                               : "pointer",
                         }}
@@ -2363,7 +2359,7 @@ Beta Version
                     />
                     <GuideItem
                       number="2"
-                      text="The system validates US numbers as +1 followed by 10 digits."
+                      text="The system validates UAE numbers as +971 followed by a 9-digit mobile number starting with 5."
                     />
                     <GuideItem
                       number="3"

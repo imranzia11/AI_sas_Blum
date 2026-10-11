@@ -321,7 +321,7 @@ export default function TemplatesPage() {
               <div style={brandWrapStyle}>
                 <div style={brandIconStyle}>N</div>
                 <div>
-                  <div style={brandTitleStyle}>Nexgen SMS</div>
+                  <div style={brandTitleStyle}>Blum WhatsApp</div>
                   <div style={brandSubStyle}>Admin Portal</div>
                 </div>
               </div>

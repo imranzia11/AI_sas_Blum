@@ -149,7 +149,7 @@ export default function BillingPage() {
             <div style={brandWrapStyle}>
               <div style={brandIconStyle}>N</div>
               <div>
-                <div style={brandTitleStyle}>Nexgen SMS</div>
+                <div style={brandTitleStyle}>Blum WhatsApp</div>
                 <div style={brandSubStyle}>User Portal</div>
               </div>
             </div>

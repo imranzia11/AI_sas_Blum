@@ -4,7 +4,7 @@ import { assertNotGloballyBlocked, BlockedNumberError } from "./globalBlocklist"
 
 export { BlockedNumberError };
 
-// Single choke point for every outbound Twilio send in the app.
+// Single choke point for every outbound Twilio WhatsApp send in the app.
 //
 // Why this exists: send-reply, send-sms, send-sms/twilio, and
 // cron/send-followups each used to build their own Twilio payload inline.
@@ -18,8 +18,21 @@ export { BlockedNumberError };
 // conversation. That's the cross-account leak.
 //
 // The fix is to always pin `from` to the sending user's own dedicated
-// number. Routing every send through this one function means that
-// guarantee can't be silently dropped by a new call site in the future.
+// WhatsApp-enabled number. Routing every send through this one function
+// means that guarantee can't be silently dropped by a new call site in
+// the future.
+//
+// SMS -> WhatsApp: every `to`/`from` Twilio actually sends with here is
+// given the mandatory "whatsapp:" channel prefix internally, so every call
+// site below keeps passing plain E.164 numbers exactly as it did for SMS.
+// The one behavior difference callers need to know about: WhatsApp only
+// allows a free-form `body` send when the customer messaged this number
+// within the last 24 hours (the "customer service window"). Outside that
+// window — which covers every first-touch/bulk marketing send — Meta
+// requires a pre-approved message Template, sent via `contentSid` +
+// `contentVariables` instead of `body`. Pass `contentSid`/`contentVariables`
+// for template sends (see app/api/send-sms/twilio/route.ts); leave them
+// unset and pass `body` for in-window replies and follow-ups.
 
 export type SendSmsUserData = {
   twilioNumber?: string;
@@ -35,7 +48,7 @@ export type SendSmsResult = {
 
 export class MissingTwilioNumberError extends Error {
   constructor() {
-    super("No Twilio number is assigned to this user.");
+    super("No WhatsApp-enabled Twilio number is assigned to this user.");
     this.name = "MissingTwilioNumberError";
   }
 }
@@ -47,6 +60,15 @@ export class MissingTwilioConfigError extends Error {
   }
 }
 
+export class MissingWhatsAppTemplateError extends Error {
+  constructor() {
+    super(
+      "This is a first-touch WhatsApp message, which requires an approved message template (contentSid) — a plain text body can only be sent as a reply within 24 hours of the customer's last message."
+    );
+    this.name = "MissingWhatsAppTemplateError";
+  }
+}
+
 function resolveTwilioNumber(userData: SendSmsUserData) {
   return toE164(String(userData.twilioNumber || userData.assignedTwilioNumber || ""));
 }
@@ -55,12 +77,32 @@ export function getUserTwilioNumber(userData: SendSmsUserData) {
   return resolveTwilioNumber(userData);
 }
 
+// Twilio's WhatsApp channel requires every `to`/`from` to carry this
+// literal prefix ahead of the E.164 number - this is the one place that
+// prefix gets added, so nothing stored in Firestore ever has to carry it.
+function toWhatsAppAddress(e164: string) {
+  const normalized = toE164(e164);
+  return normalized ? `whatsapp:${normalized}` : "";
+}
+
+function stripWhatsAppPrefix(address: string) {
+  return String(address || "").replace(/^whatsapp:/i, "");
+}
+
 export async function sendSmsForUser(opts: {
   userData: SendSmsUserData;
   to: string;
   body?: string;
   mediaUrls?: string[];
   statusCallbackPath?: string;
+  // Approved WhatsApp message Template SID (Twilio Content API,
+  // "HX..."), required for any business-initiated send outside the
+  // 24-hour customer service window. Takes precedence over `body` when
+  // both are provided — Twilio rejects a send that mixes the two.
+  contentSid?: string;
+  // Named variables the template's placeholders ({{1}}, {{2}}, ...) fill
+  // in with, e.g. { "1": "Hi Sara" }.
+  contentVariables?: Record<string, string>;
 }): Promise<SendSmsResult> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -82,6 +124,11 @@ export async function sendSmsForUser(opts: {
   const to = toE164(opts.to);
   const body = String(opts.body || "").trim();
   const mediaUrl = (opts.mediaUrls || []).filter(Boolean);
+  const contentSid = String(opts.contentSid || "").trim();
+
+  if (!contentSid && !body) {
+    throw new MissingWhatsAppTemplateError();
+  }
 
   // Platform-wide opt-out check. This runs regardless of whether the
   // calling route did its own per-owner blacklist check (one of them,
@@ -98,12 +145,14 @@ export async function sendSmsForUser(opts: {
     statusCallback?: string;
     body?: string;
     mediaUrl?: string[];
+    contentSid?: string;
+    contentVariables?: string;
   } = {
-    to,
+    to: toWhatsAppAddress(to),
     // This is the actual fix: pin the literal sender number so Twilio's
     // Messaging Service pool can never substitute a different user's
     // number for this send.
-    from: twilioNumber,
+    from: toWhatsAppAddress(twilioNumber),
   };
 
   if (messagingServiceSid) {
@@ -116,7 +165,12 @@ export async function sendSmsForUser(opts: {
     }`;
   }
 
-  if (body) {
+  if (contentSid) {
+    payload.contentSid = contentSid;
+    if (opts.contentVariables) {
+      payload.contentVariables = JSON.stringify(opts.contentVariables);
+    }
+  } else if (body) {
     payload.body = body;
   }
 
@@ -129,6 +183,6 @@ export async function sendSmsForUser(opts: {
   return {
     sid: msg.sid,
     status: msg.status || "queued",
-    from: msg.from || twilioNumber,
+    from: stripWhatsAppPrefix(msg.from || twilioNumber),
   };
 }

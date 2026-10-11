@@ -22,6 +22,14 @@ const TWILIO_ERROR_DESCRIPTIONS: Record<string, string> = {
   "21614": "This is not a valid mobile number.",
   "21617": "Message body exceeded the maximum allowed size.",
   "21619": "Attached media exceeded the maximum allowed size.",
+  // WhatsApp-specific (Twilio's WhatsApp channel error range).
+  "63016": "Freeform text can only be sent within 24 hours of the customer's last message — this send needs an approved message template instead.",
+  "63018": "WhatsApp rate limit exceeded for this number — try again shortly.",
+  "63024": "This message violates WhatsApp's business messaging policy and was rejected by Meta.",
+  "63049": "The message template's placeholder count didn't match the variables provided.",
+  "63051": "This recipient has not opted in (or has opted out) and cannot be messaged on WhatsApp.",
+  "63007": "No WhatsApp sender is configured for this Twilio number — it needs to be WhatsApp-enabled first.",
+  "63013": "Message delivery failed — the recipient's WhatsApp account could not be reached.",
 };
 
 export function describeTwilioError(errorCode?: string, rawError?: string): string {
