@@ -2372,8 +2372,7 @@ const mobileBrandRowStyle: CSSProperties = {
 const mobileBrandLogoStyle: CSSProperties = {
   width: 40,
   height: 40,
-  borderRadius: 11,
-  objectFit: "cover",
+  objectFit: "contain",
   flexShrink: 0,
 };
 
@@ -2568,8 +2567,7 @@ const mobileQrCloseButtonStyle: CSSProperties = {
 const mobileQrLogoStyle: CSSProperties = {
   width: 44,
   height: 44,
-  borderRadius: 12,
-  objectFit: "cover",
+  objectFit: "contain",
   marginBottom: 4,
 };
 

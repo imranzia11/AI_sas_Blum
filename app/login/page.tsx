@@ -250,7 +250,14 @@ function LoginPageInner() {
         <div style={shellStyle} className="login-shell">
           <section style={leftStyle} className="login-left">
             <div style={brandRowStyle}>
-              <div style={brandIconStyle}>N</div>
+              <div style={brandIconStyle}>
+              <img
+                src="/logo-mark.png"
+                alt=""
+                aria-hidden="true"
+                style={brandIconImgStyle}
+              />
+            </div>
               <div>
                 <div style={brandTitleStyle}>Blum Marketing</div>
                 <div style={brandSubStyle}>AI Marketing Platform</div>
@@ -569,17 +576,20 @@ const brandRowStyle: CSSProperties = {
 };
 
 const brandIconStyle: CSSProperties = {
-  width: 46,
-  height: 46,
-  borderRadius: 14,
+  width: 52,
+  height: 52,
+  borderRadius: 16,
   display: "grid",
   placeItems: "center",
   background: "rgba(255,255,255,0.16)",
   border: "1px solid rgba(255,255,255,0.28)",
-  color: "#ffffff",
-  fontSize: 20,
-  fontWeight: 700,
-  fontFamily: "'Space Grotesk', sans-serif",
+  boxShadow: "0 6px 18px rgba(80,7,36,0.25)",
+};
+
+const brandIconImgStyle: CSSProperties = {
+  width: 40,
+  height: 40,
+  objectFit: "contain",
 };
 
 const brandTitleStyle: CSSProperties = {
@@ -877,8 +887,7 @@ const cardBrandRowStyle: CSSProperties = {
 const cardBrandLogoStyle: CSSProperties = {
   width: 32,
   height: 32,
-  borderRadius: 9,
-  objectFit: "cover",
+  objectFit: "contain",
 };
 
 const cardBrandTextStyle: CSSProperties = {
