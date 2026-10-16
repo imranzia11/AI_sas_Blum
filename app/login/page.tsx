@@ -221,6 +221,33 @@ function LoginPageInner() {
           color: rgba(148, 163, 184, 0.7);
         }
 
+        .wa-tail-out {
+          position: relative;
+        }
+        .wa-tail-out::after {
+          content: "";
+          position: absolute;
+          right: -7px;
+          bottom: 0;
+          width: 10px;
+          height: 12px;
+          background: inherit;
+          clip-path: polygon(0 0, 100% 100%, 0 100%);
+        }
+        .wa-tail-in {
+          position: relative;
+        }
+        .wa-tail-in::after {
+          content: "";
+          position: absolute;
+          left: -7px;
+          bottom: 0;
+          width: 10px;
+          height: 12px;
+          background: inherit;
+          clip-path: polygon(100% 0, 100% 100%, 0 100%);
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .thread-bubble {
             animation: none !important;
@@ -281,16 +308,21 @@ function LoginPageInner() {
 
             <div style={threadCardStyle}>
               <div style={threadTopBarStyle}>
-                <span style={threadTopDotStyle} />
-                <span style={threadTopLabelStyle}>+971 50 123 4567</span>
-                <span style={threadTopStatusStyle}>live thread</span>
+                <span style={threadAvatarStyle}>S</span>
+                <div style={threadHeaderTextWrapStyle}>
+                  <span style={threadTopLabelStyle}>Sarah Al Mansoori</span>
+                  <span style={threadTopStatusStyle}>
+                    <span style={threadTopDotStyle} />
+                    +971 50 123 4567 · online
+                  </span>
+                </div>
               </div>
 
               <div style={threadBodyStyle}>
                 <div style={threadRowOutStyle}>
                   {showOutBubble ? (
                     <div
-                      className="thread-bubble"
+                      className="thread-bubble wa-tail-out"
                       style={{
                         ...threadBubbleStyle,
                         ...threadBubbleOutStyle,
@@ -309,20 +341,20 @@ function LoginPageInner() {
                               threadStep === "outDelivered" ||
                               threadStep === "typingIn" ||
                               threadStep === "inReceived"
-                                ? "#f9a8d4"
-                                : "rgba(255,255,255,0.55)",
+                                ? "#53bdeb"
+                                : "rgba(131,24,67,0.45)",
                           }}
                         >
-                          {threadStep === "outSent" ? "sent ✓" : "delivered ✓✓"}
+                          {threadStep === "outSent" ? "✓" : "✓✓"}
                         </span>
                       </div>
                     </div>
                   ) : threadStep === "typingOut" ? (
                     <div
-                      className="thread-bubble"
+                      className="thread-bubble wa-tail-out"
                       style={{ ...typingBubbleStyle, ...typingBubbleOutStyle }}
                     >
-                      <TypingDots />
+                      <TypingDots dark />
                     </div>
                   ) : null}
                 </div>
@@ -330,7 +362,7 @@ function LoginPageInner() {
                 <div style={threadRowInStyle}>
                   {showInBubble ? (
                     <div
-                      className="thread-bubble"
+                      className="thread-bubble wa-tail-in"
                       style={{
                         ...threadBubbleStyle,
                         ...threadBubbleInStyle,
@@ -344,7 +376,7 @@ function LoginPageInner() {
                     </div>
                   ) : threadStep === "typingIn" ? (
                     <div
-                      className="thread-bubble"
+                      className="thread-bubble wa-tail-in"
                       style={{ ...typingBubbleStyle, ...typingBubbleInStyle }}
                     >
                       <TypingDots dark />
@@ -644,60 +676,87 @@ const threadCardStyle: CSSProperties = {
   width: "100%",
   maxWidth: 440,
   borderRadius: 20,
-  background: "rgba(80,7,36, 0.28)",
-  border: "1px solid rgba(255,255,255,0.16)",
-  padding: 18,
+  overflow: "hidden",
+  background: "#f3e7ec",
+  boxShadow: "0 20px 50px rgba(80,7,36,0.35)",
+  border: "1px solid rgba(255,255,255,0.25)",
 };
 
 const threadTopBarStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 8,
-  paddingBottom: 12,
-  borderBottom: "1px solid rgba(255,255,255,0.14)",
+  gap: 10,
+  padding: "12px 16px",
+  background: "linear-gradient(135deg, #9d174d 0%, #be185d 100%)",
+};
+
+const threadAvatarStyle: CSSProperties = {
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  flexShrink: 0,
+  display: "grid",
+  placeItems: "center",
+  background: "rgba(255,255,255,0.22)",
+  border: "1px solid rgba(255,255,255,0.35)",
+  color: "#ffffff",
+  fontSize: 13,
+  fontWeight: 700,
+  fontFamily: "'Space Grotesk', sans-serif",
+};
+
+const threadHeaderTextWrapStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 2,
+  minWidth: 0,
 };
 
 const threadTopDotStyle: CSSProperties = {
-  width: 7,
-  height: 7,
+  width: 6,
+  height: 6,
   borderRadius: "50%",
-  background: "#ffffff",
-  flexShrink: 0,
+  background: "#4ade80",
+  display: "inline-block",
+  marginRight: 5,
 };
 
 const threadTopLabelStyle: CSSProperties = {
-  fontFamily: "'IBM Plex Mono', monospace",
-  fontSize: 12.5,
-  color: "rgba(255,255,255,0.85)",
-  flex: 1,
+  fontFamily: "'Space Grotesk', sans-serif",
+  fontSize: 13.5,
+  fontWeight: 700,
+  color: "#ffffff",
 };
 
 const threadTopStatusStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
   fontSize: 11,
-  color: "rgba(255,255,255,0.75)",
+  color: "rgba(255,255,255,0.8)",
   fontFamily: "'IBM Plex Mono', monospace",
 };
 
 const threadBodyStyle: CSSProperties = {
-  padding: "16px 2px",
+  padding: "16px 14px",
   position: "relative",
   height: 148,
+  background: "#f3e7ec",
 };
 
 const threadRowOutStyle: CSSProperties = {
   position: "absolute",
-  top: 8,
-  right: 2,
-  left: 2,
+  top: 10,
+  right: 14,
+  left: 14,
   display: "flex",
   justifyContent: "flex-end",
 };
 
 const threadRowInStyle: CSSProperties = {
   position: "absolute",
-  top: 84,
-  right: 2,
-  left: 2,
+  top: 86,
+  right: 14,
+  left: 14,
   display: "flex",
   justifyContent: "flex-start",
 };
@@ -709,18 +768,20 @@ const threadBubbleStyle: CSSProperties = {
 };
 
 const threadBubbleOutStyle: CSSProperties = {
-  background: "rgba(80,7,36, 0.55)",
-  border: "1px solid rgba(255,255,255,0.14)",
+  background: "#fbcfe8",
+  borderBottomRightRadius: 3,
 };
 
 const threadBubbleInStyle: CSSProperties = {
-  background: "rgba(255,255,255,0.92)",
+  background: "#ffffff",
+  borderBottomLeftRadius: 3,
+  boxShadow: "0 1px 2px rgba(15,23,42,0.1)",
 };
 
 const threadBubbleTextStyle: CSSProperties = {
   fontSize: 13,
   lineHeight: 1.5,
-  color: "#ffffff",
+  color: "#5b0e34",
 };
 
 const threadBubbleTextInStyle: CSSProperties = {
@@ -732,11 +793,12 @@ const threadBubbleTextInStyle: CSSProperties = {
 const threadMetaOutStyle: CSSProperties = {
   marginTop: 6,
   display: "flex",
-  justifyContent: "space-between",
-  gap: 10,
+  justifyContent: "flex-end",
+  alignItems: "center",
+  gap: 6,
   fontFamily: "'IBM Plex Mono', monospace",
   fontSize: 10.5,
-  color: "rgba(255,255,255,0.6)",
+  color: "rgba(91,14,52,0.55)",
 };
 
 const threadMetaInStyle: CSSProperties = {
@@ -753,19 +815,23 @@ const typingBubbleStyle: CSSProperties = {
 };
 
 const typingBubbleOutStyle: CSSProperties = {
-  background: "rgba(80,7,36, 0.4)",
+  background: "#fbcfe8",
+  borderBottomRightRadius: 3,
 };
 
 const typingBubbleInStyle: CSSProperties = {
-  background: "rgba(255,255,255,0.55)",
+  background: "#ffffff",
+  borderBottomLeftRadius: 3,
+  boxShadow: "0 1px 2px rgba(15,23,42,0.1)",
 };
 
 const threadFooterStyle: CSSProperties = {
-  paddingTop: 12,
-  borderTop: "1px solid rgba(255,255,255,0.14)",
+  padding: "10px 16px",
+  borderTop: "1px solid rgba(80,7,36,0.08)",
+  background: "#ece0e6",
   fontFamily: "'IBM Plex Mono', monospace",
   fontSize: 10.5,
-  color: "rgba(255, 255, 255, 0.55)",
+  color: "rgba(80, 7, 36, 0.5)",
 };
 
 const statsRowStyle: CSSProperties = {
