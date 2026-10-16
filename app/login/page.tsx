@@ -257,18 +257,19 @@ function LoginPageInner() {
               </div>
             </div>
 
-            <div style={heroBadgeStyle}>AI-powered outreach for growth teams</div>
+            <div style={heroBadgeStyle}>WhatsApp marketing for Real Estate & Restaurants</div>
 
             <h1 style={heroTitleStyle}>
-              Turn conversations
+              Your next customer
               <br />
-              into customers.
+              is a message away.
             </h1>
 
             <p style={heroTextStyle}>
-              Launch campaigns, get AI-assisted replies, and track every lead
-              from first message to closed deal — all from one marketing
-              portal built for growth.
+              Skip the cold calls. Reach buyers who are browsing listings and
+              diners who are deciding where to eat — right now, on WhatsApp.
+              Launch campaigns, get AI-assisted replies, and turn interested
+              leads into booked viewings and reserved tables.
             </p>
 
             <div style={threadCardStyle}>
